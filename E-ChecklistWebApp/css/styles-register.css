@@ -1,0 +1,60 @@
+body {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.navbar {
+    background-color: rgba(47, 47,47,0.1) !important; 
+    
+}
+
+.header-text {
+    font-size: 2.5rem;
+    color: #ffffff;
+    font-weight: lighter;
+}
+
+.form-control {
+    border-radius: 5px;
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+.form-control::placeholder {
+    color: #cccccc;
+}
+
+.btn-primary {
+    background-color: #1e90ff;
+    border-color: #1e90ff;
+}
+
+.btn-primary:hover {
+    background-color: #1c86ee;
+    border-color: #1c86ee;
+}
+
+.bg-image {
+    background-image: url('/Images/portrait-young-woman-scientist-working.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.fade-in-section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in-section.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+.Register {
+    min-height: 100vh;
+}
+
+.text-custome{
+    margin-bottom: 3rem;
+}

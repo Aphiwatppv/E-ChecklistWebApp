@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+
+    <link href="~/bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="~/bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
+    <script src="~/css/scripts.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            @Html.ActionLink("E-Checklist System", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    @if (Session["User"] != null)
+                    {
+                        var user = (E_ChecklistWebApp.Models.EchecklistAllowingProcess)Session["User"];
+                        if (user.AllowingFlag == "A5")
+                        {
+                            <li class="nav-item">@Html.ActionLink("Home", "New_package_PM", "New_package_PM", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li class="nav-item">@Html.ActionLink("New Package (EE)", "New_package_EE", "New_package_EE", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li class="nav-item">@Html.ActionLink("Tooling Status", "Tooling_status_checking", "Tooling_status_checking", new { area = "" }, new { @class = "nav-link" })</li>
+                        }
+                        else if (user.AllowingFlag == "PM")
+                        {
+                            <li class="nav-item">@Html.ActionLink("New Package (PM)", "New_package_PM", "New_package_PM", new { area = "" }, new { @class = "nav-link" })</li>
+                        }
+                    }
+                </ul>
+                <ul class="navbar-nav ms-auto" ">
+                    @if (Session["User"] != null)
+                    {
+                        var user = (E_ChecklistWebApp.Models.EchecklistAllowingProcess)Session["User"];
+                        <li class="nav-item">
+                            @Html.ActionLink($"Welcome, {user.AllowingFlag} | EN : {user.AllowingFlag}", "Details", "UserInformation", new { area = "" }, new { @class = "nav-link text-white" })
+                        </li>
+                        <li class="nav-item">
+                            @Html.ActionLink("Logout", "Logout", "Login", new { area = "" }, new { @class = "nav-link text-white" })
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            @Html.ActionLink("Sign In", "Login", "Login", new { area = "" }, new { @class = "nav-link text-white" })
+                        </li>
+                        <li class="nav-item">
+                            @Html.ActionLink("Register", "Register", "Register", new { area = "" }, new { @class = "nav-link text-white" })
+                        </li>
+                        <li class="nav-item">
+                            @Html.ActionLink("Process", "Process", "Process", new { area = "" }, new { @class = "nav-link text-white" })
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+    @RenderBody()
+</body>
+</html>

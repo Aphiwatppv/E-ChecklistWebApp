@@ -1,0 +1,49 @@
+﻿
+@{
+    ViewBag.Title = "Checklist";
+}
+
+<link href="~/css/styles-checklist.css" rel="stylesheet" />
+<div class="container mt-5 pt-5">
+    <h1 class="text-center text-custom">Checklists for Process XYZ</h1>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <input type="text" id="searchBar" class="form-control mb-4" placeholder="Search checklists...">
+        </div>
+    </div>
+
+    <div class="row mt-4 fade-in-section">
+        <div class="col-md-12 checklist-card" data-title="checklist 1">
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Checklist 1</h5>
+                    <p class="card-text">Description of Checklist 1.</p>
+                    <p class="card-text"><strong>Period:</strong> Daily</p>
+                    @Html.ActionLink("Go to Checklist", "checklistEntry", "checklistEntry", new { area = "" }, new { @class = "btn btn-secondary ml-2" })
+                </div>
+            </div>
+        </div>
+        <!-- Repeat for more checklists -->
+        <div class="col-md-12 checklist-card" data-title="checklist 2">
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Checklist 2</h5>
+                    <p class="card-text">Description of Checklist 2.</p>
+                    <p class="card-text"><strong>Period:</strong> Monthly</p>
+                    @Html.ActionLink("Go to Checklist", "checklistEntry", "checklistEntry", new { area = "" }, new { @class = "btn btn-secondary ml-2" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 checklist-card" data-title="checklist 3">
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Checklist 3</h5>
+                    <p class="card-text">Description of Checklist 3.</p>
+                    <p class="card-text"><strong>Period:</strong> Daily</p>
+                    @Html.ActionLink("Go to Checklist", "checklistEntry", "checklistEntry", new { area = "" }, new { @class = "btn btn-secondary ml-2" })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

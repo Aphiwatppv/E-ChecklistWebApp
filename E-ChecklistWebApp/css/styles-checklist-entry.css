@@ -1,0 +1,73 @@
+body {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.navbar {
+    background-color: rgba(47, 47, 47, 0.1) !important;
+}
+
+.text-center {
+    margin-top: 20px;
+}
+
+.tab-content .tab-pane {
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.list-group-item {
+    border: none;
+}
+
+.list-group-item.bg-dark {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+.btn-primary {
+    margin-top: 2rem !important;
+    background-color: #2d6297;
+    border-color: #1e90ff;
+}
+
+.btn-primary:hover {
+    background-color: #1c86ee;
+    border-color: #1c86ee;
+}
+
+.mt-5 {
+    margin-top: 3rem !important;
+}
+
+.pt-5 {
+    padding-top: 3rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+#checklistForm .form-group label {
+    color: #ffffff;
+}
+
+.nav-tabs .nav-link {
+    color: #ffffff;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #1e90ff;
+    color: #ffffff;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: #1c86ee;
+    color: #ffffff;
+}
+
+.bg-dark p, .bg-dark span {
+    color: #cccccc;
+}

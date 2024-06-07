@@ -1,0 +1,55 @@
+﻿
+@{
+    ViewBag.Title = "Process";
+}
+<link href="~/css/styles-process.css" rel="stylesheet">
+<div class="container mt-5 pt-5 fade-in-section">
+    <h1 class="text-center">Hello, User</h1>
+    <h2 class="text-center">Welcome to E-Checklist System</h2>
+    <h3 class="text-center">Please select a process</h3>
+
+    <div class="row mt-4">
+
+        <div class="col-md-4">
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Process 1</h5>
+                    <p class="card-text">Description of Process 1.</p>
+                    <p class="card-text">Plant</p>
+                    @Html.ActionLink("Select", "Checklist", "Checklist", new { area = "" }, new { @class = "btn btn-primary" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Process 2</h5>
+                    <p class="card-text">Description of Process 2.</p>
+                    <p class="card-text">Plant</p>
+                    @Html.ActionLink("Select", "Checklist", "Checklist", new { area = "" }, new { @class = "btn btn-primary" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Process 3</h5>
+                    <p class="card-text">Description of Process 3.</p>
+                    <p class="card-text">Plant</p>
+                    @Html.ActionLink("Select", "Checklist", "Checklist", new { area = "" }, new { @class = "btn btn-primary" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Process 4</h5>
+                    <p class="card-text">Description of Process 4.</p>
+                    <p class="card-text">Plant</p>
+                    @Html.ActionLink("Select", "Checklist", "Checklist", new { area = "" }, new { @class = "btn btn-primary" })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
