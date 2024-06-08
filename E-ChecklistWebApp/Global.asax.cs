@@ -1,4 +1,6 @@
 ﻿using E_ChecklistWebApp.AuthApi;
+using MySqlUserEngineServices.DataAccess;
+using MySqlUserEngineServices.MySqlUserService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -28,11 +30,11 @@ namespace E_ChecklistWebApp
         private void RegisterComponents()
         {
             var container = new UnityContainer();
-            //string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string connectionString = ConfigurationManager.ConnectionStrings["Db"].ConnectionString;
             container.RegisterType<IAuthAPI, AuthAPI>();
-    //        container.RegisterType<ISqlAccess, SqlAccess>(
-    //new InjectionConstructor("connectionString"));
-    //        container.RegisterType<ISqlService, SqlService>();
+            container.RegisterType<IDataAccess, DataAccess>(
+            new InjectionConstructor(connectionString));
+            container.RegisterType<IMySqlUserService, MySqlUserService>();
             DependencyResolver.SetResolver(new UnityDependencyResolver(container));
         }
     }

@@ -7,6 +7,9 @@
 
     <link href="~/bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="~/bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
+
+    @*@Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")*@
     <script src="~/css/scripts.js"></script>
 </head>
 <body>
@@ -17,49 +20,53 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav">
                     @if (Session["User"] != null)
                     {
-                        var user = (E_ChecklistWebApp.Models.EchecklistAllowingProcess)Session["User"];
-                        if (user.AllowingFlag == "A5")
+                        var user = (E_ChecklistWebApp.Models.EchecklistAuthenticationWithoutHash)Session["User"];
+                        if (user.Role == "ADMIN")
                         {
-                            <li class="nav-item">@Html.ActionLink("Home", "New_package_PM", "New_package_PM", new { area = "" }, new { @class = "nav-link" })</li>
-                            <li class="nav-item">@Html.ActionLink("New Package (EE)", "New_package_EE", "New_package_EE", new { area = "" }, new { @class = "nav-link" })</li>
-                            <li class="nav-item">@Html.ActionLink("Tooling Status", "Tooling_status_checking", "Tooling_status_checking", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li class="nav-item">
+                                @Html.ActionLink("Register", "Register", "Register", new { area = "" }, new { @class = "nav-link text-white" })
+                            </li>
+                            <li class="nav-item">
+                                @Html.ActionLink("Process", "Process", "Process", new { area = "" }, new { @class = "nav-link text-white" })
+                            </li>
                         }
-                        else if (user.AllowingFlag == "PM")
+                        else if (user.EN == "PM")
                         {
-                            <li class="nav-item">@Html.ActionLink("New Package (PM)", "New_package_PM", "New_package_PM", new { area = "" }, new { @class = "nav-link" })</li>
+
                         }
                     }
                 </ul>
-                <ul class="navbar-nav ms-auto" ">
+                <ul class="navbar-nav ms-auto">
                     @if (Session["User"] != null)
                     {
-                        var user = (E_ChecklistWebApp.Models.EchecklistAllowingProcess)Session["User"];
+                        var user = (E_ChecklistWebApp.Models.EchecklistAuthenticationWithoutHash)Session["User"];
                         <li class="nav-item">
-                            @Html.ActionLink($"Welcome, {user.AllowingFlag} | EN : {user.AllowingFlag}", "Details", "UserInformation", new { area = "" }, new { @class = "nav-link text-white" })
+                            @Html.ActionLink($"Welcome, {user.EN} | Role : {user.Role}", "Details", "UserInformation", new { area = "" }, new { @class = "nav-link text-white" })
                         </li>
+
                         <li class="nav-item">
                             @Html.ActionLink("Logout", "Logout", "Login", new { area = "" }, new { @class = "nav-link text-white" })
                         </li>
+
                     }
                     else
                     {
                         <li class="nav-item">
                             @Html.ActionLink("Sign In", "Login", "Login", new { area = "" }, new { @class = "nav-link text-white" })
                         </li>
-                        <li class="nav-item">
-                            @Html.ActionLink("Register", "Register", "Register", new { area = "" }, new { @class = "nav-link text-white" })
-                        </li>
-                        <li class="nav-item">
-                            @Html.ActionLink("Process", "Process", "Process", new { area = "" }, new { @class = "nav-link text-white" })
-                        </li>
+
                     }
                 </ul>
             </div>
         </div>
     </nav>
     @RenderBody()
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false) 
 </body>
 </html>

@@ -19,12 +19,12 @@ namespace E_ChecklistWebApp.AuthApi
         public AuthAPI(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri("https://localhost:44367/");
+            _httpClient.BaseAddress = new Uri("http://localhost:8084/EChecklistAPI/");
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<EchecklistAllowingProcess> LoginAsync(EChecklistInputLogIn userInput)
+        public async Task<EchecklistAuthenticationWithoutHash> LoginAsync(EChecklistInputLogIn userInput)
         {
             var json = JsonConvert.SerializeObject(userInput);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -34,14 +34,14 @@ namespace E_ChecklistWebApp.AuthApi
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var users = JsonConvert.DeserializeObject<EchecklistAllowingProcess>(result);
+                var users = JsonConvert.DeserializeObject<EchecklistAuthenticationWithoutHash>(result);
 
-
-                return users ?? new EchecklistAllowingProcess();
+                return users ?? new EchecklistAuthenticationWithoutHash();
             }
 
-            return new EchecklistAllowingProcess();
+            return new EchecklistAuthenticationWithoutHash();
         }
+
 
         public async Task<string> RegisterAsync(EchecklistInputAuthentication registerModel)
         {
