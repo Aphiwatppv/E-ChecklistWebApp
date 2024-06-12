@@ -1,10 +1,16 @@
-﻿
+﻿@model E_ChecklistWebApp.Controllers.ChecklistEntryViewModel
+
 @{
-    ViewBag.Title = "checklistEntry";
+    ViewBag.Title = "Checklist Entry";
+
 }
+
 <link href="~/css/styles-checklist-entry.css" rel="stylesheet" />
+<script src="~/bootstrap-5.3.3-dist/js/popper.min.js"></script>
+<script src="~/bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
+
 <div class="container mt-5 pt-5">
-    <h1 class="text-center text-custom" id="checklistName">Checklist Name</h1>
+    <h1 class="text-center text-custom" id="checklistName">@Model.ChecklistName</h1>
 
     <ul class="nav nav-tabs mt-4" id="checklistTab" role="tablist">
         <li class="nav-item">
@@ -19,49 +25,258 @@
     </ul>
 
     <div class="tab-content mt-4" id="checklistTabContent">
+        <!-- Entry Data Tab -->
         <div class="tab-pane fade show active" id="entry-data" role="tabpanel" aria-labelledby="entry-data-tab">
-            <form id="checklistForm">
+            <form id="checklistForm" method="post" action="@Url.Action("SaveChecklistEntry", "checklistEntry")">
+                <input type="hidden" name="ChecklistId" value="@ViewBag.ChecklistId" />
+                <input type="hidden" name="ChecklistName" value="@ViewBag.ChecklistName" />
+                <input type="hidden" name="ChecklistDescription" value="@ViewBag.ChecklistDescription" />
+                <input type="hidden" name="Checklistdate" value="@ViewBag.Checklistdate" />
+                <input type="hidden" name="ProcessId" value="@ViewBag.ProcessId" />
+
                 <ul class="list-group" id="checklistItems">
-                    <li class="list-group-item bg-dark text-white">
-                        <div class="form-group">
-                            <label for="item-1">Checklist Item 1</label>
-                            <input type="text" class="form-control mb-3" id="item-1" name="item-1" placeholder="Enter value for item 1">
-                        </div>
-                    </li>
-                    <li class="list-group-item bg-dark text-white">
-                        <div class="form-group">
-                            <label for="item-2">Checklist Item 2</label>
-                            <input type="text" class="form-control mb-3" id="item-2" name="item-2" placeholder="Enter value for item 2">
-                        </div>
-                    </li>
-                    <li class="list-group-item bg-dark text-white">
-                        <div class="form-group">
-                            <label for="item-3">Checklist Item 3</label>
-                            <input type="text" class="form-control mb-3" id="item-3" name="item-3" placeholder="Enter value for item 3">
-                        </div>
-                    </li>
-                    <!-- Add more checklist items as needed -->
+                    @foreach (var itemWithConstants in Model.ChecklistItemsWithConstants)
+                    {
+                        <li class="list-group-item bg-dark text-white mb-3">
+                            <div class="form-group">
+                                <label for="item-@itemWithConstants.ChecklistItem.ItemId">
+                                    @itemWithConstants.ChecklistItem.ItemName (@itemWithConstants.ChecklistItem.Unit)
+                                    <span class="badge bg-info text-dark" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" title="Description" data-bs-content="@itemWithConstants.ChecklistItem.Description">?</span>
+                                </label>
+                                @if (itemWithConstants.Constants.Any())
+                                {
+                                    <select class="form-control mb-3" id="item-@itemWithConstants.ChecklistItem.ItemId" name="item-@itemWithConstants.ChecklistItem.ItemId">
+                                        @foreach (var constant in itemWithConstants.Constants)
+                                        {
+                                            <option value="@constant.ConstantValue">@constant.ConstantValue - @constant.Description</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control mb-3" id="item-@itemWithConstants.ChecklistItem.ItemId" name="item-@itemWithConstants.ChecklistItem.ItemId" placeholder="Enter value for @itemWithConstants.ChecklistItem.ItemName">
+                                }
+                            </div>
+                        </li>
+                    }
                 </ul>
-                <button type="submit" class="btn btn-primary btn-block mt-4 w-100">Submit</button>
+                <button type="button" class="btn btn-primary btn-block mt-4 w-100" data-bs-toggle="modal" data-bs-target="#confirmationModal">Submit</button>
             </form>
         </div>
 
+        <!-- Checklist Detail Tab -->
         <div class="tab-pane fade" id="checklist-detail" role="tabpanel" aria-labelledby="checklist-detail-tab">
             <div class="bg-dark text-white p-4">
-                <p id="checklistDescription">Checklist Description</p>
-                <p><strong>Created Date:</strong> <span id="createDate">YYYY-MM-DD</span></p>
-                <!-- Add more checklist details as needed -->
+                <h4>Checklist Detail</h4>
+                <div class="mb-3">
+                    <p><strong>Checklist Name:</strong> @Model.ChecklistName</p>
+                    <p><strong>Description:</strong> @Model.ChecklistDescription</p>
+                    <p><strong>Created Date:</strong> <span id="createDate">@Model.CreateDate</span></p>
+                </div>
+
+                <div class="mt-4">
+                    <h5>Items</h5>
+                    <div class="list-group">
+                        @foreach (var itemdetail in Model.ChecklistItemsWithConstants)
+                        {
+                            <div class="list-group-item bg-secondary text-white mb-2">
+                                <h6>@itemdetail.ChecklistItem.ItemName</h6>
+                                <p class="mb-1"><strong>Unit:</strong> @itemdetail.ChecklistItem.Unit</p>
+                                <p class="mb-1" id="ItemDescription"><strong>Description:</strong> @itemdetail.ChecklistItem.Description</p>
+                            </div>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
 
+        <!-- Historical Data Tab -->
         <div class="tab-pane fade" id="historical" role="tabpanel" aria-labelledby="historical-tab">
             <div class="bg-dark text-white p-4">
-                <h5>Historical Data</h5>
-                <!-- Add historical data content as needed -->
-                <p>Previous entry 1: <span>Data</span></p>
-                <p>Previous entry 2: <span>Data</span></p>
-                <p>Previous entry 3: <span>Data</span></p>
+                <h4>Historical Data</h4>
+                @if (Model.echecklistHistoricalRecords.Any())
+                {
+                    <div class="list-group">
+                        @foreach (var itemhistorical in Model.echecklistHistoricalRecords)
+                        {
+                            <div class="list-group-item bg-secondary text-white mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>@itemhistorical.ProcessName</h6>
+                                        <p class="mb-1"><strong>Checklist:</strong> @itemhistorical.ChecklistName</p>
+                                        <p class="mb-1"><strong>Created By:</strong> @itemhistorical.EN</p>
+                                    </div>
+                                    <div>
+                                        <p class="mb-1"><strong>Date:</strong> @itemhistorical.CreateDate.ToString("yyyy-MM-dd HH:mm")</p>
+                                        <button class="btn btn-primary btn-sm mt-2" onclick="showRecords(@itemhistorical.HistoricalId)">Show Records</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-white">No historical data available.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Modal to display records -->
+        <div class="modal fade" id="recordsModal" tabindex="-1" aria-labelledby="recordsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" style="background-color: #2c2c2c; color: white;">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="recordsModalLabel">Echecklist Records</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Record ID</th>
+                                        <th scope="col">Index Item</th>
+                                        <th scope="col">Checklist Name</th>
+                                        <th scope="col">Item Name</th>
+                                        <th scope="col">Value</th>
+                                        <th scope="col">Unit</th>
+                                        <th scope="col">EN</th>
+                                        <th scope="col">Adding Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recordsTableBody">
+                                    <!-- Records will be dynamically inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+    function showRecords(historicalId) {
+        $.ajax({
+            url: '@Url.Action("GetEchecklistRecordsByHistoricalId", "checklistEntry")',
+            type: 'GET',
+            data: { historicalId: historicalId },
+            success: function (data) {
+                const tableBody = document.getElementById('recordsTableBody');
+                tableBody.innerHTML = ''; // Clear existing records
+                data.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.RecordId}</td>
+                        <td>${record.IndexItem}</td>
+                        <td>${record.ChecklistName}</td>
+                        <td>${record.ItemName}</td>
+                        <td>${record.Value}</td>
+                        <td>${record.Unit}</td>
+                        <td>${record.EN}</td>
+                        <td>${new Date(record.AddingDate).toLocaleString()}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                $('#recordsModal').modal('show');
+            },
+            error: function (error) {
+                console.error('Error fetching records:', error);
+            }
+        });
+    }
+        </script>
+
+
+
+        <!-- Modal to display records -->
+        <div class="modal fade" id="recordsModal" tabindex="-1" aria-labelledby="recordsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" style="background-color: #2c2c2c; color: white;">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="recordsModalLabel">Echecklist Records</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-dark table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Record ID</th>
+                                    <th scope="col">Index Item</th>
+                                    <th scope="col">Checklist Name</th>
+                                    <th scope="col">Item Name</th>
+                                    <th scope="col">Value</th>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col">EN</th>
+                                    <th scope="col">Adding Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recordsTableBody">
+                                <!-- Records will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background-color: #2c2c2c; color: white; border-radius: 10px;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirm Submission</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>Checklist Name: @Model.ChecklistName</h5>
+                <h6>Checklist Description: @Model.ChecklistDescription</h6>
+                <p>Please review your entries before submitting.</p>
+                <ul class="list-group" id="confirmationItems">
+                    @foreach (var itemWithConstants in Model.ChecklistItemsWithConstants)
+                    {
+                        <li class="list-group-item bg-dark text-white">
+                            <div>
+                                <strong>@itemWithConstants.ChecklistItem.ItemName (@itemWithConstants.ChecklistItem.Unit):</strong>
+                                <span id="confirm-@itemWithConstants.ChecklistItem.ItemId"></span>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmSubmit">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl, {
+                trigger: 'hover focus'
+            });
+        });
+
+        document.querySelector('button[data-bs-toggle="modal"]').addEventListener('click', function () {
+            // Populate the modal with form data
+            @foreach (var itemWithConstants in Model.ChecklistItemsWithConstants)
+            {
+                <text>
+                var itemId = "@itemWithConstants.ChecklistItem.ItemId";
+                var value = document.getElementById("item-" + itemId).value;
+                document.getElementById("confirm-" + itemId).innerText = value;
+                </text>
+            }
+        });
+
+        document.getElementById('confirmSubmit').addEventListener('click', function () {
+            document.getElementById('checklistForm').submit();
+        });
+    });
+</script>

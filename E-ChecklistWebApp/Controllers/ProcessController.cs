@@ -34,7 +34,8 @@ namespace E_ChecklistWebApp.Controllers
             }
 
             eChecklistAllowingProcessDetail = await _mySqlUserService.getAllowingProcessById(user.IdAuthen);
-        
+            Session["Process"] = eChecklistAllowingProcessDetail.Select(x =>x.ProcessName).FirstOrDefault();
+            Session["processId"] = eChecklistAllowingProcessDetail.Where(x => x.ProcessName == Session["Process"]);
             return View(eChecklistAllowingProcessDetail);
         }
     }

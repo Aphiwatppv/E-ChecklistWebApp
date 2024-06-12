@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const sections = document.querySelectorAll('.fade-in-section');
 
     const observer = new IntersectionObserver((entries, observer) => {
@@ -14,18 +14,22 @@ document.addEventListener('DOMContentLoaded', function() {
     sections.forEach(section => {
         observer.observe(section);
     });
-});
 
-document.getElementById('searchBar').addEventListener('keyup', function() {
-    var searchQuery = this.value.toLowerCase();
-    var cards = document.getElementsByClassName('checklist-card');
+    // Move the search bar event listener inside the DOMContentLoaded event
+    const searchBar = document.getElementById('searchBar');
+    if (searchBar) {
+        searchBar.addEventListener('keyup', function () {
+            var searchQuery = this.value.toLowerCase();
+            var cards = document.getElementsByClassName('checklist-card');
 
-    Array.prototype.forEach.call(cards, function(card) {
-        var cardTitle = card.getAttribute('data-title').toLowerCase();
-        if (searchQuery === "" || cardTitle.includes(searchQuery)) {
-            card.style.display = '';
-        } else {
-            card.style.display = 'none';
-        }
-    });
+            Array.prototype.forEach.call(cards, function (card) {
+                var cardTitle = card.getAttribute('data-title').toLowerCase();
+                if (searchQuery === "" || cardTitle.includes(searchQuery)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
 });

@@ -20,7 +20,7 @@
                         <h5 class="card-title">@process.ProcessName</h5>
                         <p class="card-text">@process.ProcessDetail</p>
                         <p class="card-text">Plant: @user.Plant</p>
-                        @Html.ActionLink("Select", "Checklist", "Checklist", new { area = "", processId = process.ProcessId }, new { @class = "btn btn-primary" })
+                        @Html.ActionLink("Select", "Checklist", "Checklist", new { area = "", processId = process.ProcessId , processName = process.ProcessName}, new { @class = "btn btn-primary" })
                     </div>
                 </div>
             </div>
