@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = "Engineering";
+}
+<link href="~/css/style-feature.css" rel="stylesheet">
+
+<div class="container mt-5 pt-5 fade-in-section">
+    <div class="text-center mb-5">
+        <h1 class="display-4 text-white">Select Engineering Features</h1>
+        <p class="lead text-white">Choose from the available features below to get started.</p>
+    </div>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-sm bg-dark text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Registering Feature</h5>
+                    <p class="card-text">Register user</p>
+                     @Html.ActionLink("Register", "Register", "Register", new { area = "" }, new { @class = "btn btn-light" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-sm bg-dark text-white">
+                <div class="card-body">
+                    <h5 class="card-title">User Management Feature</h5>
+                    <p class="card-text">Add new user to process</p>
+                    @Html.ActionLink("Manage user", "AllowUserToProcess", "AllowUserToProcess", new { }, new { @class = "btn btn-light" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-sm bg-dark text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Create New Checklist</h5>
+                    <p class="card-text">Create a new checklist</p>
+                    @Html.ActionLink("Create a new checklist", "ChecklistManagement", "ChecklistManagement", new { }, new { @class = "btn btn-light" })
+                </div>
+            </div>
+        </div>
+    </div>
+    @*<div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-sm bg-dark text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Adjust Checklist</h5>
+                    <p class="card-text">Adjust checklist detail</p>
+                    @Html.ActionLink("Adjust checklist", "ActionName", "ControllerName", new { }, new { @class = "btn btn-light" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-sm bg-dark text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Feature 5</h5>
+                    <p class="card-text">Description of Feature 5.</p>
+                    @Html.ActionLink("Select", "ActionName", "ControllerName", new { }, new { @class = "btn btn-light" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-sm bg-dark text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Feature 6</h5>
+                    <p class="card-text">Description of Feature 6.</p>
+                    @Html.ActionLink("Select", "ActionName", "ControllerName", new { }, new { @class = "btn btn-light" })
+                </div>
+            </div>
+        </div>
+    </div>*@
+</div>

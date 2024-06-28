@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Checklist Entry";
+    var user = (E_ChecklistWebApp.Models.EchecklistAuthenticationWithoutHash)Session["User"];
 
 }
 
@@ -9,7 +10,7 @@
 <script src="~/bootstrap-5.3.3-dist/js/popper.min.js"></script>
 <script src="~/bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
 
-<div class="container mt-5 pt-5">
+<div class="container mt-5 pt-5 fade-in-section">
     <h1 class="text-center text-custom" id="checklistName">@Model.ChecklistName</h1>
 
     <ul class="nav nav-tabs mt-4" id="checklistTab" role="tablist">
@@ -34,32 +35,49 @@
                 <input type="hidden" name="Checklistdate" value="@ViewBag.Checklistdate" />
                 <input type="hidden" name="ProcessId" value="@ViewBag.ProcessId" />
 
-                <ul class="list-group" id="checklistItems">
-                    @foreach (var itemWithConstants in Model.ChecklistItemsWithConstants)
-                    {
-                        <li class="list-group-item bg-dark text-white mb-3">
-                            <div class="form-group">
-                                <label for="item-@itemWithConstants.ChecklistItem.ItemId">
-                                    @itemWithConstants.ChecklistItem.ItemName (@itemWithConstants.ChecklistItem.Unit)
-                                    <span class="badge bg-info text-dark" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" title="Description" data-bs-content="@itemWithConstants.ChecklistItem.Description">?</span>
-                                </label>
-                                @if (itemWithConstants.Constants.Any())
-                                {
-                                    <select class="form-control mb-3" id="item-@itemWithConstants.ChecklistItem.ItemId" name="item-@itemWithConstants.ChecklistItem.ItemId">
-                                        @foreach (var constant in itemWithConstants.Constants)
-                                        {
-                                            <option value="@constant.ConstantValue">@constant.ConstantValue - @constant.Description</option>
-                                        }
-                                    </select>
-                                }
-                                else
-                                {
-                                    <input type="text" class="form-control mb-3" id="item-@itemWithConstants.ChecklistItem.ItemId" name="item-@itemWithConstants.ChecklistItem.ItemId" placeholder="Enter value for @itemWithConstants.ChecklistItem.ItemName">
-                                }
-                            </div>
-                        </li>
-                    }
-                </ul>
+                <div class="form-group mb-3 p-3 bg-light rounded">
+                    <h5 class="text-dark">Checklist Details</h5>
+                    <div class="form-group mb-3">
+                        <label for="machineNo" class="form-label text-dark">Machine No:</label>
+                        <input type="text" class="form-control" id="machineNo" name="MachineNo" placeholder="Enter Machine No" oninput="updateMachineNo()">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="lotNo" class="form-label text-dark">Lot No:</label>
+                        <input type="text" class="form-control" id="lotNo" name="LotNo" placeholder="Enter Lot No" oninput="updateLotNo()">
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h5 class="text-white">Checklist Items</h5>
+                    <ul class="list-group" id="checklistItems">
+                        @foreach (var itemWithConstants in Model.ChecklistItemsWithConstants)
+                        {
+                            <li class="list-group-item mb-3 bg-dark text-white border-light rounded">
+                                <div class="form-group">
+                                    <label for="item-@itemWithConstants.ChecklistItem.ItemId">
+                                        @itemWithConstants.ChecklistItem.ItemName (@itemWithConstants.ChecklistItem.Unit)
+                                        <span class="badge bg-info text-dark" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" title="Description" data-bs-content="@itemWithConstants.ChecklistItem.Description">?</span>
+                                    </label>
+                                    @if (itemWithConstants.Constants.Any())
+                                    {
+                                        <select class="form-control mb-3" id="item-@itemWithConstants.ChecklistItem.ItemId" name="item-@itemWithConstants.ChecklistItem.ItemId">
+                                            @foreach (var constant in itemWithConstants.Constants)
+                                            {
+                                                <option value="@constant.ConstantValue">@constant.ConstantValue - @constant.Description</option>
+                                            }
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="form-control mb-3" id="item-@itemWithConstants.ChecklistItem.ItemId" name="item-@itemWithConstants.ChecklistItem.ItemId" placeholder="Enter value for @itemWithConstants.ChecklistItem.ItemName">
+                                    }
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
                 <button type="button" class="btn btn-primary btn-block mt-4 w-100" data-bs-toggle="modal" data-bs-target="#confirmationModal">Submit</button>
             </form>
         </div>
@@ -89,137 +107,272 @@
                 </div>
             </div>
         </div>
-
         <!-- Historical Data Tab -->
         <div class="tab-pane fade" id="historical" role="tabpanel" aria-labelledby="historical-tab">
-            <div class="bg-dark text-white p-4">
+            <div class="p-4" style="background-color: #ffffff; color: #212529;">
                 <h4>Historical Data</h4>
-                @if (Model.echecklistHistoricalRecords.Any())
-                {
-                    <div class="list-group">
-                        @foreach (var itemhistorical in Model.echecklistHistoricalRecords)
-                        {
-                            <div class="list-group-item bg-secondary text-white mb-2">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <h6>@itemhistorical.ProcessName</h6>
-                                        <p class="mb-1"><strong>Checklist:</strong> @itemhistorical.ChecklistName</p>
-                                        <p class="mb-1"><strong>Created By:</strong> @itemhistorical.EN</p>
-                                    </div>
-                                    <div>
-                                        <p class="mb-1"><strong>Date:</strong> @itemhistorical.CreateDate.ToString("yyyy-MM-dd HH:mm")</p>
-                                        <button class="btn btn-primary btn-sm mt-2" onclick="showRecords(@itemhistorical.HistoricalId)">Show Records</button>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <p class="text-white">No historical data available.</p>
-                }
-            </div>
-        </div>
 
-        <!-- Modal to display records -->
-        <div class="modal fade" id="recordsModal" tabindex="-1" aria-labelledby="recordsModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content" style="background-color: #2c2c2c; color: white;">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="recordsModalLabel">Echecklist Records</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="table-responsive">
-                            <table class="table table-dark table-striped">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Record ID</th>
-                                        <th scope="col">Index Item</th>
-                                        <th scope="col">Checklist Name</th>
-                                        <th scope="col">Item Name</th>
-                                        <th scope="col">Value</th>
-                                        <th scope="col">Unit</th>
-                                        <th scope="col">EN</th>
-                                        <th scope="col">Adding Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="recordsTableBody">
-                                    <!-- Records will be dynamically inserted here -->
-                                </tbody>
-                            </table>
+                <!-- Filter Form -->
+                <form id="filterForm" class="mb-4">
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="machineName">Machine Name</label>
+                            <input type="text" class="form-control" id="MachineName" placeholder="Enter Machine Name">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="lotNumber">Lot Number</label>
+                            <input type="text" class="form-control" id="LotNumber" placeholder="Enter Lot Number">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="startDate">Start Date</label>
+                            <input type="date" class="form-control" id="startDate">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="endDate">End Date</label>
+                            <input type="date" class="form-control" id="endDate">
                         </div>
                     </div>
+                    <button type="button" class="btn btn-primary mt-3" onclick="filterRecords()">Filter</button>
+                </form>
+
+                <!-- Filtered Historical Data -->
+                <div id="historicalRecords">
+                    @if (Model.echecklistHistoricalRecords.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var itemhistorical in Model.echecklistHistoricalRecords)
+                            {
+                                <div class="list-group-item mb-2" style="background-color: #f8f9fa; color: #212529; border: 1px solid #ced4da;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="font-weight-bold">@itemhistorical.ProcessName</h6>
+                                            <p class="mb-1"><strong>Checklist:</strong> @itemhistorical.ChecklistName</p>
+                                            <p class="mb-1"><strong>Created By:</strong> @itemhistorical.EN</p>
+                                            <p class="mb-1"><strong>Machine Name:</strong> @itemhistorical.MachineName</p>
+                                            <p class="mb-1"><strong>Lot Number:</strong> @itemhistorical.LotNumber</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="mb-1" id="downloadRecordsId" data-historical-id="@itemhistorical.HistoricalId"><strong>Date:</strong> @itemhistorical.CreateDate</p>
+                                            <div class="btn-group mt-2" role="group" aria-label="Record Actions">
+                                                <button class="btn btn-primary btn-sm mx-1" onclick="showRecords(@itemhistorical.HistoricalId)">Show Records</button>
+                                                <button class="btn btn-primary btn-sm mx-1 btn-custome" id="downloadRecords">Download Record</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No historical data available.</p>
+                    }
                 </div>
             </div>
         </div>
 
-        <script>
-    function showRecords(historicalId) {
-        $.ajax({
-            url: '@Url.Action("GetEchecklistRecordsByHistoricalId", "checklistEntry")',
-            type: 'GET',
-            data: { historicalId: historicalId },
-            success: function (data) {
-                const tableBody = document.getElementById('recordsTableBody');
-                tableBody.innerHTML = ''; // Clear existing records
-                data.forEach(record => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${record.RecordId}</td>
-                        <td>${record.IndexItem}</td>
-                        <td>${record.ChecklistName}</td>
-                        <td>${record.ItemName}</td>
-                        <td>${record.Value}</td>
-                        <td>${record.Unit}</td>
-                        <td>${record.EN}</td>
-                        <td>${new Date(record.AddingDate).toLocaleString()}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-                $('#recordsModal').modal('show');
-            },
-            error: function (error) {
-                console.error('Error fetching records:', error);
-            }
-        });
-    }
-        </script>
-
-
-
         <!-- Modal to display records -->
         <div class="modal fade" id="recordsModal" tabindex="-1" aria-labelledby="recordsModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content" style="background-color: #2c2c2c; color: white;">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="recordsModalLabel">Echecklist Records</h5>
+                        <h5 class="modal-title" id="recordsModalLabel">Historical E-Checklist for @Model.ChecklistName</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                        <!-- Header Section -->
+                        <div class="header-section mb-3">
+                            <h6>Lot Name: <span id="lotName"></span></h6>
+                            <h6>Machine Name: <span id="machineName"></span></h6>
+                            <h6>Adding Date: <span id="addingDate"></span></h6>
+                        </div>
                         <table class="table table-dark table-striped">
                             <thead>
-                                <tr>
-                                    <th scope="col">Record ID</th>
-                                    <th scope="col">Index Item</th>
-                                    <th scope="col">Checklist Name</th>
-                                    <th scope="col">Item Name</th>
-                                    <th scope="col">Value</th>
-                                    <th scope="col">Unit</th>
-                                    <th scope="col">EN</th>
-                                    <th scope="col">Adding Date</th>
-                                </tr>
+                                @if (user.Role == "ADMIN" || user.Role == "ENGINEER")
+                                {
+                                    <tr>
+                                        <!-- <th>Record ID</th> -->
+                                        <th>Item Name</th>
+                                        <th>Value</th>
+                                        <th>Unit</th>
+                                        <th>Edit</th>
+                                    </tr>
+                                }
+                                else if (user.Role == "User")
+                                {
+                                    <tr>
+                                        <!-- <th>Record ID</th> -->
+                                        <th>Item Name</th>
+                                        <th>Value</th>
+                                        <th>Unit</th>
+                                    </tr>
+                                }
                             </thead>
                             <tbody id="recordsTableBody">
-                                <!-- Records will be dynamically inserted here -->
+                                <!-- Table rows will be dynamically inserted here -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Edit Modal -->
+        <div class="modal fade" id="editRecordModal" tabindex="-1" aria-labelledby="editRecordModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content" style="background-color: #2c2c2c; color: white;">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editRecordModalLabel">Edit Record</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editRecordForm">
+                            <input type="hidden" id="editRecordId">
+                            <input type="hidden" id="editHistoricalId"> <!-- Hidden input for historicalId -->
+                            <div class="mb-3">
+                                <label for="editValue" class="form-label">Value</label>
+                                <input type="text" class="form-control" id="editValue">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editAddingDate" class="form-label">Adding Date</label>
+                                <input type="datetime-local" class="form-control" id="editAddingDate">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editMachineName" class="form-label">Machine Name</label>
+                                <input type="text" class="form-control" id="editMachineName">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editLotNo" class="form-label">Lot No</label>
+                                <input type="text" class="form-control" id="editLotNo">
+                            </div>
+                            <button type="button" class="btn btn-secondary w-100" onclick="saveEdit()">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        function showRecords(historicalId) {
+                            $.ajax({
+                                url: '@Url.Action("GetEchecklistRecordsByHistoricalId", "ChecklistEntry")',
+                                type: 'GET',
+                                data: { historicalId: historicalId },
+                                success: function(data) {
+                                    const tableBody = document.getElementById('recordsTableBody');
+                                    tableBody.innerHTML = ''; // Clear existing records
+
+                                    // Assuming the first record contains the header information
+                                    if (data.length > 0) {
+                                        const firstRecord = data[0];
+                                        const dateMatch = /\/Date\((\d+)\)\//.exec(firstRecord.AddingDate);
+                                        let formattedDate;
+                                        if (dateMatch) {
+                                            const timestamp = parseInt(dateMatch[1]);
+                                            const addingDate = new Date(timestamp);
+                                            formattedDate = addingDate.toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: '2-digit',
+                                                day: '2-digit',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                second: '2-digit'
+                                            });
+                                        } else {
+                                            formattedDate = firstRecord.AddingDate; // Fallback to raw string if parsing fails
+                                        }
+
+                                        document.getElementById('lotName').innerText = firstRecord.LotNumber;
+                                        document.getElementById('machineName').innerText = firstRecord.MachineName;
+                                        document.getElementById('addingDate').innerText = formattedDate;
+                                    }
+
+                                    data.forEach(record => {
+                                        const row = document.createElement('tr');
+
+                                        row.innerHTML = `
+                                            <td>${record.ItemName}</td>
+                                            <td>${record.Value}</td>
+                                            <td>${record.Unit}</td>
+                                            <td>
+                                                @if (user.Role == "ADMIN" || user.Role == "ENGINEER")
+                                                {
+                                                    <button class="btn btn-secondary btn-sm edit-btn w-100" onclick="editRecord(this)">Edit</button>
+                                                }
+                                                <span class="historical-id" style="display: none;">${record.HistoricalId}</span>
+                                                <span class="record-id" style="display: none;">${record.RecordId}</span>
+                                            </td>
+                                        `;
+                                        tableBody.appendChild(row);
+                                    });
+                                    $('#recordsModal').modal('show');
+                                },
+                                error: function(error) {
+                                    console.error('Error fetching records:', error);
+                                }
+                            });
+                        }
+
+                        window.showRecords = showRecords; // Expose the function to the global scope
+                    });
+
+                    function editRecord(button) {
+                        const row = button.closest('tr');
+                        const historicalId = row.querySelector('.historical-id').innerText;
+                        const recordId = row.querySelector('.record-id').innerText;
+                        const itemName = row.children[0].innerText;
+                        const value = row.children[1].innerText;
+                        const unit = row.children[2].innerText;
+
+                        document.getElementById('editHistoricalId').value = historicalId;
+                        document.getElementById('editRecordId').value = recordId;
+                        document.getElementById('editValue').value = value;
+                        document.getElementById('editAddingDate').value = new Date().toISOString().slice(0, 16); // Set current date-time for demonstration
+                        document.getElementById('editMachineName').value = document.getElementById('machineName').innerText;
+                        document.getElementById('editLotNo').value = document.getElementById('lotName').innerText;
+
+                        $('#editRecordModal').modal('show');
+                    }
+
+                    function saveEdit() {
+                        const recordId = document.getElementById('editRecordId').value;
+                        const historicalId = document.getElementById('editHistoricalId').value;
+                        const value = document.getElementById('editValue').value;
+                        const addingDate = document.getElementById('editAddingDate').value;
+                        const machineName = document.getElementById('editMachineName').value;
+                        const lotNo = document.getElementById('editLotNo').value;
+
+                        $.ajax({
+                            url: '@Url.Action("EditEchecklistRecord", "ChecklistEntry")',
+                            type: 'POST',
+                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                            data: {
+                                editValue: value,
+                                editAddingDate: addingDate,
+                                editMachineName: machineName,
+                                editLotNo: lotNo,
+                                historicalId: historicalId,
+                                editRecordId: recordId
+                            },
+                            success: function (data) {
+                                $('#editRecordModal').modal('hide');
+                                showRecords(historicalId); // Refresh the records
+                            },
+                            error: function(error) {
+                                console.error('Error saving record:', error);
+                                alert('Error saving record: ' + error.responseText);
+                            }
+                        });
+                                }
+
+
+        </script>
+
+
+
     </div>
+
 </div>
 
 <!-- Confirmation Modal -->
@@ -233,6 +386,8 @@
             <div class="modal-body">
                 <h5>Checklist Name: @Model.ChecklistName</h5>
                 <h6>Checklist Description: @Model.ChecklistDescription</h6>
+                <h6>Machine Name: <span id="displayMachineNo"> Machine number</span> </h6>
+                <h6>Machine Name: <span id="displaylotNo"> Lot number</span> </h6>
                 <p>Please review your entries before submitting.</p>
                 <ul class="list-group" id="confirmationItems">
                     @foreach (var itemWithConstants in Model.ChecklistItemsWithConstants)
@@ -280,3 +435,95 @@
         });
     });
 </script>
+
+<script>
+    function updateMachineNo() {
+        var machineNo = document.getElementById('machineNo').value;
+        document.getElementById('displayMachineNo').innerText = machineNo ? machineNo : 'Machine No will be displayed here.';
+    }
+</script>
+
+<script>
+    function updateLotNo() {
+        var LotNo = document.getElementById('lotNo').value;
+        document.getElementById('displaylotNo').innerText = LotNo ? LotNo : 'LotNo will be displayed here.';
+    }
+</script>
+
+<script>
+function filterRecords() {
+    var machineName = document.getElementById('MachineName').value;
+    var lotNumber = document.getElementById('LotNumber').value;
+    var startDate = document.getElementById('startDate').value;
+    var endDate = document.getElementById('endDate').value;
+
+    $.ajax({
+        url: '@Url.Action("GetchecklistRecordHistoricalbyfilter", "checklistEntry")',
+        type: 'GET',
+        data: {
+            ChecklistId: '@ViewBag.ChecklistId',
+            ChecklistName: '@ViewBag.ChecklistName',
+            ChecklistDescription: '@ViewBag.ChecklistDescription',
+            Checklistdate: '@ViewBag.Checklistdate',
+            ProcessId: '@ViewBag.ProcessId',
+            MachineName: machineName,
+            LotNumber: lotNumber,
+            startDate: startDate,
+            endDate: endDate
+        },
+        success: function (data) {
+            console.log(data); // Log the returned data to inspect its structure
+
+            var historicalRecords = document.getElementById('historicalRecords');
+            historicalRecords.innerHTML = '';
+
+            if (Array.isArray(data) && data.length > 0) {
+                data.forEach(function (record) {
+                    // Extracting timestamp and creating a Date object
+                    const dateMatch = /\/Date\((\d+)\)\//.exec(record.CreateDate);
+                    let formattedDate;
+                    if (dateMatch) {
+                        const timestamp = parseInt(dateMatch[1]);
+                        const addingDate = new Date(timestamp);
+                        formattedDate = addingDate.toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
+                    } else {
+                        formattedDate = record.CreateDate; // Fallback to raw string if parsing fails
+                    }
+
+                    var recordHtml = `
+                        <div class="list-group-item mb-2" style="background-color: #f8f9fa; color: #212529; border: 1px solid #ced4da;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="font-weight-bold">${record.ProcessName}</h6>
+                                    <p class="mb-1"><strong>Checklist:</strong> ${record.ChecklistName}</p>
+                                    <p class="mb-1"><strong>Created By:</strong> ${record.EN}</p>
+                                    <p class="mb-1"><strong>Machine Name:</strong> ${record.MachineName}</p>
+                                    <p class="mb-1"><strong>Lot Number:</strong> ${record.LotNumber}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="mb-1"><strong>Date:</strong> ${formattedDate}</p>
+                                    <button class="btn btn-primary btn-sm mt-2" onclick="showRecords(${record.HistoricalId})">Show Records</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    historicalRecords.innerHTML += recordHtml;
+                });
+            } else {
+                historicalRecords.innerHTML = '<p class="text-muted">No historical data available.</p>';
+            }
+        },
+        error: function (error) {
+            console.error('Error fetching records:', error);
+        }
+    });
+}
+</script>
+

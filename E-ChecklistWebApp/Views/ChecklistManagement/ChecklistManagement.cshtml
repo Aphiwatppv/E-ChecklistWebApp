@@ -1,0 +1,327 @@
+﻿@model E_ChecklistWebApp.Controllers.ChecklistManagementModel
+
+@{
+    ViewBag.Title = "Checklist Management";
+    var user = (E_ChecklistWebApp.Models.EchecklistAuthenticationWithoutHash)Session["User"];
+}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .card-header {
+        background-color: #343a40;
+    }
+
+        .card-header h4 {
+            margin: 0;
+        }
+
+    .nav-tabs .nav-link.active {
+        background-color: #343a40;
+        color: #fff;
+    }
+
+    .nav-tabs .nav-link {
+        color: #343a40;
+    }
+
+    .form-control:focus {
+        border-color: #343a40;
+        box-shadow: none;
+    }
+
+    .btn-primary {
+        background-color: #343a40;
+        border-color: #343a40;
+    }
+
+        .btn-primary:hover {
+            background-color: #23272b;
+            border-color: #1d2124;
+        }
+
+    .form-label {
+        font-weight: bold;
+    }
+
+    .table-responsive {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header text-white">
+            <h4 class="mb-0">Checklist Management</h4>
+        </div>
+        <div class="card-body">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="create-checklist-tab" data-bs-toggle="tab" data-bs-target="#create-checklist" type="button" role="tab" aria-controls="create-checklist" aria-selected="true">Create Checklist</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="add-item-tab" data-bs-toggle="tab" data-bs-target="#add-item" type="button" role="tab" aria-controls="add-item" aria-selected="false">Add Item</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="add-constant-tab" data-bs-toggle="tab" data-bs-target="#add-constant" type="button" role="tab" aria-controls="add-constant" aria-selected="false">Add Constant Value</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="view-items-tab" data-bs-toggle="tab" data-bs-target="#view-items" type="button" role="tab" aria-controls="view-items" aria-selected="false">View Items</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="create-checklist" role="tabpanel" aria-labelledby="create-checklist-tab">
+                    @using (Html.BeginForm("CreateChecklist", "ChecklistManagement", FormMethod.Post, new { id = "checklistForm", @class = "mt-3" }))
+                    {
+                        <div class="mb-3">
+                            <label for="checklistName" class="form-label">Checklist Name</label>
+                            @Html.TextBoxFor(m => m.ChecklistName, new { @class = "form-control", @id = "checklistName", required = "required" })
+                        </div>
+                        <div class="mb-3">
+                            <label for="processSelect" class="form-label">Select Process</label>
+                            @Html.DropDownListFor(m => m.SelectedProcessId, new SelectList(Model.echecklistProcesses, "ProcessId", "ProcessName"), "--Select a process--", new { @class = "form-control", @id = "processSelect", required = "required" })
+                        </div>
+                        <div class="mb-3">
+                            <label for="activeFlag" class="form-label">Active Flag</label>
+                            @Html.CheckBoxFor(m => m.ActiveFlag, new { @class = "form-check-input", @id = "activeFlag" })
+                            <label class="form-check-label" for="activeFlag">Active</label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="period" class="form-label">Period</label>
+                            @Html.TextBoxFor(m => m.Period, new { @class = "form-control", @id = "period" })
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", @id = "description", rows = 3 })
+                        </div>
+                        <div class="mb-3">
+                            <label for="createdBy" class="form-label">Created By</label>
+                            @Html.TextBoxFor(m => m.CreatedBy, new { @class = "form-control", @id = "createdBy", required = "required" })
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    }
+                </div>
+                <!-- Add Item Tab -->
+                <div class="tab-pane fade" id="add-item" role="tabpanel" aria-labelledby="add-item-tab">
+                    @using (Html.BeginForm("AddItemToChecklist", "ChecklistManagement", FormMethod.Post, new { id = "itemForm", @class = "mt-3" }))
+                    {
+                        <div class="mb-3">
+                            <label for="processSelectItem" class="form-label">Select Process</label>
+                            @Html.DropDownList("processSelectItem", new SelectList(Model.echecklistProcesses, "ProcessId", "ProcessName"), "--Select a process--", new { @class = "form-control", @id = "processSelectItem" })
+                        </div>
+                        <div class="mb-3">
+                            <label for="checklistSelectItem" class="form-label">Select Checklist</label>
+                            <select class="form-control" id="checklistSelectItem" name="checklistSelectItem">
+                                <option value="">--Select a checklist--</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="checklistItems" class="form-label">Checklist Items</label>
+                            <select multiple class="form-control" id="checklistItems" name="checklistItems" style="height: 200px;">
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="indexItem" class="form-label">Index Item</label>
+                            <input type="number" class="form-control" id="indexItem" name="indexItem" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="itemName" class="form-label">Item Name</label>
+                            <input type="text" class="form-control" id="itemName" name="itemName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="unit" class="form-label">Unit</label>
+                            <input type="text" class="form-control" id="unit" name="unit">
+                        </div>
+                        <div class="mb-3">
+                            <label for="itemDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="itemDescription" name="itemDescription" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="itemCreateBy" class="form-label">Created By</label>
+                            <input type="number" class="form-control" id="itemCreateBy" name="itemCreateBy" required>
+                        </div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmAddModal">Add Item</button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="confirmAddModal" tabindex="-1" aria-labelledby="confirmAddModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="confirmAddModalLabel">Confirm Add Item</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to add this item to the checklist?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-primary" id="confirmAddItemButton">Add Item</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <!-- Add Constant Tab -->
+                <div class="tab-pane fade" id="add-constant" role="tabpanel" aria-labelledby="add-constant-tab">
+                    @using (Html.BeginForm("AddConstantToItem", "ChecklistManagement", FormMethod.Post, new { id = "constantForm", @class = "mt-3" }))
+                    {
+                        <div class="mb-3">
+                            <label for="constantProcessSelect" class="form-label">Select Process</label>
+                            @Html.DropDownList("constantProcessSelect", new SelectList(Model.echecklistProcesses, "ProcessId", "ProcessName"), "--Select a process--", new { @class = "form-control", @id = "constantProcessSelect" })
+                        </div>
+                        <div class="mb-3">
+                            <label for="constantChecklistSelect" class="form-label">Select Checklist</label>
+                            <select class="form-control" id="constantChecklistSelect" name="checklistId">
+                                <option value="">--Select a checklist--</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="constantItemSelect" class="form-label">Select Item</label>
+                            <select class="form-control" id="constantItemSelect" name="itemId">
+                                <option value="">--Select an item--</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="constantName" class="form-label">Constant Name</label>
+                            <input type="text" class="form-control" id="constantName" name="description" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="constantValue" class="form-label">Constant Value</label>
+                            <input type="text" class="form-control" id="constantValue" name="constantValue" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="constantCreateBy" class="form-label">Created By</label>
+                            <input type="number" class="form-control" id="constantCreateBy" name="constantCreateBy" value="@user.IdAuthen" required disabled>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Constant</button>
+                    }
+                </div>
+                <!-- View Items Tab -->
+                <div class="tab-pane fade" id="view-items" role="tabpanel" aria-labelledby="view-items-tab">
+                    <div class="mt-3">
+                        <div class="mb-3">
+                            <label for="viewProcessSelect" class="form-label">Select Process</label>
+                            @Html.DropDownList("viewProcessSelect", new SelectList(Model.echecklistProcesses, "ProcessId", "ProcessName"), "--Select a process--", new { @class = "form-control", @id = "viewProcessSelect" })
+                        </div>
+                        <div class="mb-3">
+                            <label for="viewChecklistSelect" class="form-label">Select Checklist</label>
+                            <select class="form-control" id="viewChecklistSelect">
+                                <option value="">--Select a checklist--</option>
+                            </select>
+                        </div>
+                        <div class="table-responsive mt-3">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">Index Item</th>
+                                        <th scope="col">Item Name</th>
+                                        <th scope="col">Unit</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Active Flag</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemTableBody">
+                                    <!-- Items will be dynamically added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        console.log("Document is ready");
+
+        $('#processSelectItem, #viewProcessSelect, #constantProcessSelect').change(function () {
+            console.log("Process select changed");
+            var processId = $(this).val();
+            var targetChecklistSelect = $(this).attr('id') === 'processSelectItem' ? '#checklistSelectItem' :
+                                        $(this).attr('id') === 'constantProcessSelect' ? '#constantChecklistSelect' : '#viewChecklistSelect';
+            if (processId) {
+                $.getJSON('@Url.Action("GetChecklists", "ChecklistManagement")', { processId: processId }, function (data) {
+                    var checklistSelect = $(targetChecklistSelect);
+                    checklistSelect.empty();
+                    checklistSelect.append('<option value="">--Select a checklist--</option>');
+                    $.each(data, function (index, checklist) {
+                        checklistSelect.append('<option value="' + checklist.IdChecklist + '">' + checklist.ChecklistName + '</option>');
+                    });
+                });
+            } else {
+                $(targetChecklistSelect).empty().append('<option value="">--Select a checklist--</option>');
+            }
+        });
+
+        $('#checklistSelectItem').change(function () {
+            console.log("Checklist select changed");
+            var checklistId = $(this).val();
+            if (checklistId) {
+                $.getJSON('@Url.Action("GetItems", "ChecklistManagement")', { checklistId: checklistId }, function (data) {
+                    var checklistItems = $('#checklistItems');
+                    checklistItems.empty();
+                    $.each(data, function (index, item) {
+                        checklistItems.append('<option value="' + item.IdItem + '">' + item.ItemName + '</option>');
+                    });
+                });
+            } else {
+                $('#checklistItems').empty();
+            }
+        });
+
+        $('#confirmAddItemButton').click(function () {
+            console.log("Confirm Add Item button clicked");
+            var indexItem = $('#indexItem').val();
+            var checklistSelectItem = $('#checklistSelectItem').val();
+            var itemName = $('#itemName').val();
+            var unit = $('#unit').val();
+            var itemDescription = $('#itemDescription').val();
+            var itemCreateBy = $('#itemCreateBy').val();
+
+            console.log("Sending AJAX request to add item");
+
+            $.post('@Url.Action("AddItemToChecklist", "ChecklistManagement")', {
+                indexItem: indexItem,
+                checklistSelectItem: checklistSelectItem,
+                itemName: itemName,
+                unit: unit,
+                itemDescription: itemDescription,
+                itemCreateBy: itemCreateBy
+            }, function (data) {
+                console.log("Item added successfully");
+                $('#confirmAddModal').modal('hide');
+                $('#checklistItems').append('<option style="color: blue;" value="' + itemName + '">' + itemName + '</option>');
+                $('#indexItem').val('');
+                $('#itemName').val('');
+                $('#unit').val('');
+                $('#itemDescription').val('');
+                $('#itemCreateBy').val('');
+            }).fail(function() {
+                console.log("Failed to add item");
+                alert('Failed to add item. Please try again.');
+            });
+        });
+
+        $('#itemForm').submit(function (event) {
+            event.preventDefault();
+            $('#checklistItems option').css('color', 'green');
+        });
+    });
+
+    function changeActiveFlag(itemId, isActive) {
+        console.log("Changing active flag for item " + itemId);
+        $.post('@Url.Action("ChangeItemActiveFlag", "ChecklistManagement")', { itemId: itemId, isActive: isActive }, function (data) {
+            console.log("Active flag changed successfully");
+            $('#viewChecklistSelect').change(); // Reload items
+        });
+    }
+</script>

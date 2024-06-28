@@ -21,6 +21,7 @@ namespace E_ChecklistWebApp.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         public async Task<ActionResult> Login(EChecklistInputLogIn model)
         {
             if (!ModelState.IsValid)
@@ -30,15 +31,18 @@ namespace E_ChecklistWebApp.Controllers
 
             var result = await _authAPI.LoginAsync(model);
 
-            if (result != null)
+            if (result.EN != null) // Successful login
             {
                 Session["User"] = result;
                 return RedirectToAction("Index", "Home");
             }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return View(model);
+            }
 
-           
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            return View(model);
+
         }
 
         [HttpGet]

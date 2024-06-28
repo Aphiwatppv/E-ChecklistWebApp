@@ -138,12 +138,16 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="AuthApi\AuthAPI.cs" />
     <Compile Include="AuthApi\IAuthAPI.cs" />
+    <Compile Include="Controllers\AllowUserToProcessController.cs" />
     <Compile Include="Controllers\ChecklistController.cs" />
     <Compile Include="Controllers\checklistEntryController.cs" />
+    <Compile Include="Controllers\ChecklistManagementController.cs" />
+    <Compile Include="Controllers\EngineeringController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ProcessController.cs" />
     <Compile Include="Controllers\RegisterController.cs" />
+    <Compile Include="CsvHelper.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -196,6 +200,7 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="css\scripts.js" />
+    <Content Include="css\style-feature.css" />
     <Content Include="css\styles-checklist-entry.css" />
     <Content Include="css\styles-checklist.css" />
     <Content Include="css\styles-process.css" />
@@ -394,6 +399,9 @@
     <Content Include="Views\Process\Process.cshtml" />
     <Content Include="Views\Checklist\Checklist.cshtml" />
     <Content Include="Views\checklistEntry\checklistEntry.cshtml" />
+    <Content Include="Views\Engineering\Engineering.cshtml" />
+    <Content Include="Views\AllowUserToProcess\AllowUserToProcess.cshtml" />
+    <Content Include="Views\ChecklistManagement\ChecklistManagement.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

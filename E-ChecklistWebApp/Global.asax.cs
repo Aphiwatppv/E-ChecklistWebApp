@@ -20,11 +20,12 @@ namespace E_ChecklistWebApp
     {
         protected void Application_Start()
         {
+            RegisterComponents();
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            RegisterComponents();
+
         }
 
         private void RegisterComponents()

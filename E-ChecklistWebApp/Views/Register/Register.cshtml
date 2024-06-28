@@ -1,8 +1,7 @@
-﻿
+﻿@model E_ChecklistWebApp.Models.EchecklistInputAuthentication
 @{
     ViewBag.Title = "Register";
 }
-
 
 <link href="~/css/styles-register.css" rel="stylesheet">
 <div class="container-fluid">
@@ -14,21 +13,36 @@
                     <div class="row">
                         <div class="col-lg-10 col-xl-7 mx-auto fade-in-section">
                             <h3 class="display-4 header-text text-center text-custome">E-Checklist Registering</h3>
-                            <form>
+
+                            <!-- Alert Message -->
+                            @if (TempData["AlertMessage"] != null)
+                            {
+                                <div class="alert @TempData["AlertType"]">
+                                    @TempData["AlertMessage"]
+                                </div>
+                            }
+
+                            @using (Html.BeginForm("Register", "Register", FormMethod.Post))
+                            {
                                 <div class="form-group mb-3">
-                                    <input id="inputEmail" type="text" placeholder="Employee Number" required autofocus class="form-control rounded-pill border-0 shadow-sm px-4">
+                                    @Html.TextBoxFor(m => m.EN, new { @class = "form-control rounded-pill border-0 shadow-sm px-4", placeholder = "Employee Number", required = "required", autofocus = "autofocus" })
+                                    @Html.ValidationMessageFor(m => m.EN, "", new { @class = "text-danger" })
                                 </div>
                                 <div class="form-group mb-3">
-                                    <input id="inputRole" type="text" placeholder="Role" required class="form-control rounded-pill border-0 shadow-sm px-4">
+                                    @Html.TextBoxFor(m => m.Role, new { @class = "form-control rounded-pill border-0 shadow-sm px-4", placeholder = "Role", required = "required" })
+                                    @Html.ValidationMessageFor(m => m.Role, "", new { @class = "text-danger" })
                                 </div>
                                 <div class="form-group mb-3">
-                                    <input id="inputPlant" type="text" placeholder="Plant" required class="form-control rounded-pill border-0 shadow-sm px-4">
+                                    @Html.TextBoxFor(m => m.Plant, new { @class = "form-control rounded-pill border-0 shadow-sm px-4", placeholder = "Plant", required = "required" })
+                                    @Html.ValidationMessageFor(m => m.Plant, "", new { @class = "text-danger" })
                                 </div>
                                 <div class="form-group mb-3">
-                                    <input id="inputPassword" type="password" placeholder="Password" required class="form-control rounded-pill border-0 shadow-sm px-4 text-white">
+                                    @Html.PasswordFor(m => m.Password, new { @class = "form-control rounded-pill border-0 shadow-sm px-4 text-white", placeholder = "Password", required = "required" })
+                                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                                 </div>
                                 <div class="form-group mb-3">
-                                    <input id="inputConfirmPassword" type="password" placeholder="Confirm Password" required class="form-control rounded-pill border-0 shadow-sm px-4 text-white">
+                                    @Html.PasswordFor(m => m.Password, new { @class = "form-control rounded-pill border-0 shadow-sm px-4 text-white", placeholder = "Confirm Password", required = "required" })
+                                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                                 </div>
                                 <div class="form-group">
                                     <button type="submit" class="btn btn-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm w-100">Register</button>
@@ -36,8 +50,7 @@
                                 <div class="text-center d-flex justify-content-between mt-4">
                                     <p class="mb-0 text-white">Already have an account? @Html.ActionLink("Sign In", "Login", "Login", new { area = "" }, new { @class = "text-white" })</p>
                                 </div>
-                              
-                            </form>
+                            }
                         </div>
                     </div>
                 </div>
@@ -46,3 +59,6 @@
     </div>
 </div>
 
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

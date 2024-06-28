@@ -19,7 +19,7 @@ namespace E_ChecklistWebApp.AuthApi
         public AuthAPI(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri("https://localhost:44367/");
+            _httpClient.BaseAddress = new Uri("http://th1sroeeii1:1250/");
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }

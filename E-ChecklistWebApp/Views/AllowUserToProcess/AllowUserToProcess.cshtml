@@ -1,0 +1,72 @@
+﻿@model E_ChecklistWebApp.Controllers.AllowUserToProcessModels
+
+@{
+    ViewBag.Title = "Allow User to Process";
+}
+<link href="~/css/style-feature.css" rel="stylesheet">
+
+<div class="container mt-5 pt-5 fade-in-section">
+    <div class="text-center mb-5">
+        <h1 class="display-4 text-white">Allow User to Process</h1>
+        <p class="lead text-white">Select a user and a process to allow access.</p>
+    </div>
+
+    <!-- Form to add user to process -->
+    <form action="@Url.Action("AddUserToProcess", "AllowUserToProcess")" method="post">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="IdAuthen" class="text-white">User</label>
+                    <select class="form-control bg-dark text-white" id="IdAuthen" name="IdAuthen" required>
+                        <option value="">Select User</option>
+                        @foreach (var user in Model.eChecklistAuthenDetails)
+                        {
+                            <option value="@user.IdAuthen">@user.EN</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="ProcessId" class="text-white">Process</label>
+                    <select class="form-control bg-dark text-white" id="ProcessId" name="ProcessId" required>
+                        <option value="">Select Process</option>
+                        @foreach (var process in Model.echecklistProcesses)
+                        {
+                            <option value="@process.ProcessId">@process.ProcessName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-light">Submit</button>
+        </div>
+    </form>
+
+    <!-- Form to search for allowing process by EN -->
+    <form action="@Url.Action("getAllowingProcess", "AllowUserToProcess")" method="post">
+        <div class="form-group">
+            <label for="EN" class="text-white">Show allowing process By EN</label>
+            <input type="text" class="form-control bg-dark text-white" id="EN" name="EN" required />
+            <button type="submit" class="btn btn-primary mt-2">Search</button>
+        </div>
+    </form>
+
+    @if (Model.echecklistAllowingProcessDetails != null)
+    {
+        <div class="row mt-4">
+            @foreach (var detail in Model.echecklistAllowingProcessDetails)
+            {
+                <div class="col-md-4">
+                    <div class="card bg-dark text-white mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Process Name: @detail.ProcessName</h5>
+                            <p class="card-text">Allowing Flag: @detail.ActiveFlag</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
