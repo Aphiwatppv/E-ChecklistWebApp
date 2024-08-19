@@ -3,9 +3,12 @@
 @{
     ViewBag.Title = "Checklist Entry";
     var user = (E_ChecklistWebApp.Models.EchecklistAuthenticationWithoutHash)Session["User"];
+
 }
 
 <link href="~/css/styles-checklist-entry.css" rel="stylesheet" />
+<script src="~/bootstrap-5.3.3-dist/js/popper.min.js"></script>
+<script src="~/bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
 
 <div class="container mt-5 pt-5 fade-in-section">
     <h1 class="text-center text-custom" id="checklistName">@Model.ChecklistName</h1>
@@ -25,7 +28,7 @@
     <div class="tab-content mt-4" id="checklistTabContent">
         <!-- Entry Data Tab -->
         <div class="tab-pane fade show active" id="entry-data" role="tabpanel" aria-labelledby="entry-data-tab">
-            <form id="checklistForm" method="post" action="@Url.Action("SaveChecklistEntry", "ChecklistEntry")">
+            <form id="checklistForm" method="post" action="@Url.Action("SaveChecklistEntry", "checklistEntry")">
                 <input type="hidden" name="ChecklistId" value="@ViewBag.ChecklistId" />
                 <input type="hidden" name="ChecklistName" value="@ViewBag.ChecklistName" />
                 <input type="hidden" name="ChecklistDescription" value="@ViewBag.ChecklistDescription" />
@@ -36,13 +39,9 @@
                     <h5 class="text-dark">Checklist Details</h5>
                     <div class="form-group mb-3">
                         <label for="machineNo" class="form-label text-dark">Machine No:</label>
-                        @Html.DropDownList(
-                            "MachineNo",
-                            new SelectList(Model.pmisMachineNames, "mc_no", "mc_no"),
-                            "Select Machine No",
-                            new { @class = "form-control", @id = "machineNo", @onchange = "updateMachineNo()" }
-                        )
+                        <input type="text" class="form-control" id="machineNo" name="MachineNo" placeholder="Enter Machine No" oninput="updateMachineNo()">
                     </div>
+
                     <div class="form-group mb-3">
                         <label for="lotNo" class="form-label text-dark">Lot No:</label>
                         <input type="text" class="form-control" id="lotNo" name="LotNo" placeholder="Enter Lot No" oninput="updateLotNo()">
@@ -156,7 +155,7 @@
                                             <p class="mb-1" id="downloadRecordsId" data-historical-id="@itemhistorical.HistoricalId"><strong>Date:</strong> @itemhistorical.CreateDate</p>
                                             <div class="btn-group mt-2" role="group" aria-label="Record Actions">
                                                 <button class="btn btn-primary btn-sm mx-1" onclick="showRecords(@itemhistorical.HistoricalId)">Show Records</button>
-                                                <button class="btn btn-primary btn-sm mx-1 btn-custome bg-success" onclick="downloadRecord(@itemhistorical.HistoricalId)">Download Record</button>
+                                                <button class="btn btn-primary btn-sm mx-1 btn-custome" id="downloadRecords">Download Record</button>
                                             </div>
                                         </div>
                                     </div>
@@ -192,6 +191,7 @@
                                 @if (user.Role == "ADMIN" || user.Role == "ENGINEER")
                                 {
                                     <tr>
+                                        <!-- <th>Record ID</th> -->
                                         <th>Item Name</th>
                                         <th>Value</th>
                                         <th>Unit</th>
@@ -201,6 +201,7 @@
                                 else if (user.Role == "User")
                                 {
                                     <tr>
+                                        <!-- <th>Record ID</th> -->
                                         <th>Item Name</th>
                                         <th>Value</th>
                                         <th>Unit</th>
@@ -250,7 +251,128 @@
                 </div>
             </div>
         </div>
+
+        <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        function showRecords(historicalId) {
+                            $.ajax({
+                                url: '@Url.Action("GetEchecklistRecordsByHistoricalId", "ChecklistEntry")',
+                                type: 'GET',
+                                data: { historicalId: historicalId },
+                                success: function(data) {
+                                    const tableBody = document.getElementById('recordsTableBody');
+                                    tableBody.innerHTML = ''; // Clear existing records
+
+                                    // Assuming the first record contains the header information
+                                    if (data.length > 0) {
+                                        const firstRecord = data[0];
+                                        const dateMatch = /\/Date\((\d+)\)\//.exec(firstRecord.AddingDate);
+                                        let formattedDate;
+                                        if (dateMatch) {
+                                            const timestamp = parseInt(dateMatch[1]);
+                                            const addingDate = new Date(timestamp);
+                                            formattedDate = addingDate.toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: '2-digit',
+                                                day: '2-digit',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                second: '2-digit'
+                                            });
+                                        } else {
+                                            formattedDate = firstRecord.AddingDate; // Fallback to raw string if parsing fails
+                                        }
+
+                                        document.getElementById('lotName').innerText = firstRecord.LotNumber;
+                                        document.getElementById('machineName').innerText = firstRecord.MachineName;
+                                        document.getElementById('addingDate').innerText = formattedDate;
+                                    }
+
+                                    data.forEach(record => {
+                                        const row = document.createElement('tr');
+
+                                        row.innerHTML = `
+                                            <td>${record.ItemName}</td>
+                                            <td>${record.Value}</td>
+                                            <td>${record.Unit}</td>
+                                            <td>
+                                                @if (user.Role == "ADMIN" || user.Role == "ENGINEER")
+                                                {
+                                                    <button class="btn btn-secondary btn-sm edit-btn w-100" onclick="editRecord(this)">Edit</button>
+                                                }
+                                                <span class="historical-id" style="display: none;">${record.HistoricalId}</span>
+                                                <span class="record-id" style="display: none;">${record.RecordId}</span>
+                                            </td>
+                                        `;
+                                        tableBody.appendChild(row);
+                                    });
+                                    $('#recordsModal').modal('show');
+                                },
+                                error: function(error) {
+                                    console.error('Error fetching records:', error);
+                                }
+                            });
+                        }
+
+                        window.showRecords = showRecords; // Expose the function to the global scope
+                    });
+
+                    function editRecord(button) {
+                        const row = button.closest('tr');
+                        const historicalId = row.querySelector('.historical-id').innerText;
+                        const recordId = row.querySelector('.record-id').innerText;
+                        const itemName = row.children[0].innerText;
+                        const value = row.children[1].innerText;
+                        const unit = row.children[2].innerText;
+
+                        document.getElementById('editHistoricalId').value = historicalId;
+                        document.getElementById('editRecordId').value = recordId;
+                        document.getElementById('editValue').value = value;
+                        document.getElementById('editAddingDate').value = new Date().toISOString().slice(0, 16); // Set current date-time for demonstration
+                        document.getElementById('editMachineName').value = document.getElementById('machineName').innerText;
+                        document.getElementById('editLotNo').value = document.getElementById('lotName').innerText;
+
+                        $('#editRecordModal').modal('show');
+                    }
+
+                    function saveEdit() {
+                        const recordId = document.getElementById('editRecordId').value;
+                        const historicalId = document.getElementById('editHistoricalId').value;
+                        const value = document.getElementById('editValue').value;
+                        const addingDate = document.getElementById('editAddingDate').value;
+                        const machineName = document.getElementById('editMachineName').value;
+                        const lotNo = document.getElementById('editLotNo').value;
+
+                        $.ajax({
+                            url: '@Url.Action("EditEchecklistRecord", "ChecklistEntry")',
+                            type: 'POST',
+                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                            data: {
+                                editValue: value,
+                                editAddingDate: addingDate,
+                                editMachineName: machineName,
+                                editLotNo: lotNo,
+                                historicalId: historicalId,
+                                editRecordId: recordId
+                            },
+                            success: function (data) {
+                                $('#editRecordModal').modal('hide');
+                                showRecords(historicalId); // Refresh the records
+                            },
+                            error: function(error) {
+                                console.error('Error saving record:', error);
+                                alert('Error saving record: ' + error.responseText);
+                            }
+                        });
+                                }
+
+
+        </script>
+
+
+
     </div>
+
 </div>
 
 <!-- Confirmation Modal -->
@@ -264,8 +386,8 @@
             <div class="modal-body">
                 <h5>Checklist Name: @Model.ChecklistName</h5>
                 <h6>Checklist Description: @Model.ChecklistDescription</h6>
-                <h6>Machine Name: <span id="displayMachineNo">Machine No will be displayed here.</span></h6>
-                <h6>Lot Number: <span id="displaylotNo">Lot No will be displayed here.</span></h6>
+                <h6>Machine Name: <span id="displayMachineNo"> Machine number</span> </h6>
+                <h6>Machine Name: <span id="displaylotNo"> Lot number</span> </h6>
                 <p>Please review your entries before submitting.</p>
                 <ul class="list-group" id="confirmationItems">
                     @foreach (var itemWithConstants in Model.ChecklistItemsWithConstants)
@@ -288,16 +410,6 @@
 </div>
 
 <script>
-    function updateMachineNo() {
-        var machineNo = document.getElementById('machineNo').value;
-        document.getElementById('displayMachineNo').innerText = machineNo ? machineNo : 'Machine No will be displayed here.';
-    }
-
-    function updateLotNo() {
-        var lotNo = document.getElementById('lotNo').value;
-        document.getElementById('displaylotNo').innerText = lotNo ? lotNo : 'Lot No will be displayed here.';
-    }
-
     document.addEventListener('DOMContentLoaded', function () {
         var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
         var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
@@ -325,145 +437,16 @@
 </script>
 
 <script>
-    function downloadRecord(historicalId) {
-        $.ajax({
-            url: '@Url.Action("DownloadRecords", "ChecklistEntry")',
-            type: 'GET',
-            data: { historicalId: historicalId },
-            success: function(response, status, xhr) {
-                var disposition = xhr.getResponseHeader('Content-Disposition');
-                var matches = /filename="([^"]*)"/.exec(disposition);
-                var filename = (matches != null && matches[1]) ? matches[1] : historicalId + '_historical_records.csv';
-
-                var blob = new Blob([response], { type: 'text/csv' });
-
-                var link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = filename;
-
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            },
-            error: function(xhr, status, error) {
-                console.error('Failed to download record:', error);
-                alert('Error downloading record: ' + xhr.responseText);
-            }
-        });
+    function updateMachineNo() {
+        var machineNo = document.getElementById('machineNo').value;
+        document.getElementById('displayMachineNo').innerText = machineNo ? machineNo : 'Machine No will be displayed here.';
     }
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        function showRecords(historicalId) {
-            $.ajax({
-                url: '@Url.Action("GetEchecklistRecordsByHistoricalId", "ChecklistEntry")',
-                type: 'GET',
-                data: { historicalId: historicalId },
-                success: function(data) {
-                    const tableBody = document.getElementById('recordsTableBody');
-                    tableBody.innerHTML = ''; // Clear existing records
-
-                    if (data.length > 0) {
-                        const firstRecord = data[0];
-                        const dateMatch = /\/Date\((\d+)\)\//.exec(firstRecord.AddingDate);
-                        let formattedDate;
-                        if (dateMatch) {
-                            const timestamp = parseInt(dateMatch[1]);
-                            const addingDate = new Date(timestamp);
-                            formattedDate = addingDate.toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit'
-                            });
-                        } else {
-                            formattedDate = firstRecord.AddingDate; // Fallback to raw string if parsing fails
-                        }
-
-                        document.getElementById('lotName').innerText = firstRecord.LotNumber;
-                        document.getElementById('machineName').innerText = firstRecord.MachineName;
-                        document.getElementById('addingDate').innerText = formattedDate;
-                    }
-
-                    data.forEach(record => {
-                        const row = document.createElement('tr');
-
-                        row.innerHTML = `
-                            <td>${record.ItemName}</td>
-                            <td>${record.Value}</td>
-                            <td>${record.Unit}</td>
-                            <td>
-                                @if (user.Role == "ADMIN" || user.Role == "ENGINEER")
-                                {
-                                    <button class="btn btn-secondary btn-sm edit-btn w-100" onclick="editRecord(this)">Edit</button>
-                                }
-                                <span class="historical-id" style="display: none;">${record.HistoricalId}</span>
-                                <span class="record-id" style="display: none;">${record.RecordId}</span>
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                    $('#recordsModal').modal('show');
-                },
-                error: function(error) {
-                    console.error('Error fetching records:', error);
-                }
-            });
-        }
-
-        window.showRecords = showRecords; // Expose the function to the global scope
-    });
-
-    function editRecord(button) {
-        const row = button.closest('tr');
-        const historicalId = row.querySelector('.historical-id').innerText;
-        const recordId = row.querySelector('.record-id').innerText;
-        const itemName = row.children[0].innerText;
-        const value = row.children[1].innerText;
-        const unit = row.children[2].innerText;
-
-        document.getElementById('editHistoricalId').value = historicalId;
-        document.getElementById('editRecordId').value = recordId;
-        document.getElementById('editValue').value = value;
-        document.getElementById('editAddingDate').value = new Date().toISOString().slice(0, 16); // Set current date-time for demonstration
-        document.getElementById('editMachineName').value = document.getElementById('machineName').innerText;
-        document.getElementById('editLotNo').value = document.getElementById('lotName').innerText;
-
-        $('#editRecordModal').modal('show');
-    }
-
-    function saveEdit() {
-        const recordId = document.getElementById('editRecordId').value;
-        const historicalId = document.getElementById('editHistoricalId').value;
-        const value = document.getElementById('editValue').value;
-        const addingDate = document.getElementById('editAddingDate').value;
-        const machineName = document.getElementById('editMachineName').value;
-        const lotNo = document.getElementById('editLotNo').value;
-
-        $.ajax({
-            url: '@Url.Action("EditEchecklistRecord", "ChecklistEntry")',
-            type: 'POST',
-            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            data: {
-                editValue: value,
-                editAddingDate: addingDate,
-                editMachineName: machineName,
-                editLotNo: lotNo,
-                historicalId: historicalId,
-                editRecordId: recordId
-            },
-            success: function (data) {
-                $('#editRecordModal').modal('hide');
-                showRecords(historicalId); // Refresh the records
-            },
-            error: function(error) {
-                console.error('Error saving record:', error);
-                alert('Error saving record: ' + error.responseText);
-            }
-        });
+    function updateLotNo() {
+        var LotNo = document.getElementById('lotNo').value;
+        document.getElementById('displaylotNo').innerText = LotNo ? LotNo : 'LotNo will be displayed here.';
     }
 </script>
 
@@ -475,7 +458,7 @@ function filterRecords() {
     var endDate = document.getElementById('endDate').value;
 
     $.ajax({
-        url: '@Url.Action("GetChecklistRecordHistoricalByFilter", "ChecklistEntry")',
+        url: '@Url.Action("GetchecklistRecordHistoricalbyfilter", "checklistEntry")',
         type: 'GET',
         data: {
             ChecklistId: '@ViewBag.ChecklistId',
@@ -496,6 +479,7 @@ function filterRecords() {
 
             if (Array.isArray(data) && data.length > 0) {
                 data.forEach(function (record) {
+                    // Extracting timestamp and creating a Date object
                     const dateMatch = /\/Date\((\d+)\)\//.exec(record.CreateDate);
                     let formattedDate;
                     if (dateMatch) {
@@ -514,23 +498,18 @@ function filterRecords() {
                     }
 
                     var recordHtml = `
-                        <div class="list-group">
-                            <div class="list-group-item mb-2" style="background-color: #f8f9fa; color: #212529; border: 1px solid #ced4da;">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="font-weight-bold">${record.ProcessName}</h6>
-                                        <p class="mb-1"><strong>Checklist:</strong> ${record.ChecklistName}</p>
-                                        <p class="mb-1"><strong>Created By:</strong> ${record.EN}</p>
-                                        <p class="mb-1"><strong>Machine Name:</strong> ${record.MachineName}</p>
-                                        <p class="mb-1"><strong>Lot Number:</strong> ${record.LotNumber}</p>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="mb-1" id="downloadRecordsId" data-historical-id="${record.HistoricalId}"><strong>Date:</strong> ${formattedDate}</p>
-                                        <div class="btn-group mt-2" role="group" aria-label="Record Actions">
-                                            <button class="btn btn-primary btn-sm mx-1" onclick="showRecords(${record.HistoricalId})">Show Records</button>
-                                            <button class="btn btn-primary btn-sm mx-1 btn-custom bg-success" onclick="downloadRecord(${record.HistoricalId})">Download Record</button>
-                                        </div>
-                                    </div>
+                        <div class="list-group-item mb-2" style="background-color: #f8f9fa; color: #212529; border: 1px solid #ced4da;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="font-weight-bold">${record.ProcessName}</h6>
+                                    <p class="mb-1"><strong>Checklist:</strong> ${record.ChecklistName}</p>
+                                    <p class="mb-1"><strong>Created By:</strong> ${record.EN}</p>
+                                    <p class="mb-1"><strong>Machine Name:</strong> ${record.MachineName}</p>
+                                    <p class="mb-1"><strong>Lot Number:</strong> ${record.LotNumber}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="mb-1"><strong>Date:</strong> ${formattedDate}</p>
+                                    <button class="btn btn-primary btn-sm mt-2" onclick="showRecords(${record.HistoricalId})">Show Records</button>
                                 </div>
                             </div>
                         </div>
@@ -547,3 +526,4 @@ function filterRecords() {
     });
 }
 </script>
+

@@ -1,6 +1,4 @@
-﻿using E_ChecklistWebApp.AuthApi;
-using E_ChecklistWebApp.MachineModeApi;
-using MySqlUserEngineServices.Model;
+﻿using MySqlUserEngineServices.Model;
 using MySqlUserEngineServices.MySqlUserService;
 using System;
 using System.Collections.Generic;
@@ -16,12 +14,10 @@ namespace E_ChecklistWebApp.Controllers
     public class ChecklistManagementController : Controller
     {
         private readonly IMySqlUserService _mySqlUserService;
-        private readonly IMachineModelAPI _machineModelAPI;
 
-        public ChecklistManagementController(IMySqlUserService mySqlUserService, IMachineModelAPI machineModelAPI)
+        public ChecklistManagementController(IMySqlUserService mySqlUserService)
         {
             _mySqlUserService = mySqlUserService;
-            _machineModelAPI = machineModelAPI; 
         }
 
         public async Task<ActionResult> ChecklistManagement()
@@ -38,19 +34,8 @@ namespace E_ChecklistWebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateChecklist(ChecklistManagementModel model)
         {
-            string ActiveFlag = string.Empty;
-            if (model.ActiveFlag)
-            {
-                ActiveFlag = "Active";
-            }
-            else
-            {
-                ActiveFlag = "Inactive";
-            }
-
             if (ModelState.IsValid)
             {
-                var user = (E_ChecklistWebApp.Models.EchecklistAuthenticationWithoutHash)Session["User"];
                 var newChecklist = new EChecklistCreateChecklist
                 {
                     ChecklistName = model.ChecklistName,
@@ -58,7 +43,7 @@ namespace E_ChecklistWebApp.Controllers
                     ActiveFlag = model.ActiveFlag ? "Active" : "Inactive",
                     Period = model.Period,
                     Description = model.Description,
-                    CreateBy = user.IdAuthen
+                    CreateBy = model.CreatedBy
                 };
                 await _mySqlUserService.CreateNewChecklist(newChecklist);
                 return RedirectToAction("ChecklistManagement");
@@ -130,72 +115,17 @@ namespace E_ChecklistWebApp.Controllers
             return View("ChecklistManagement");
         }
 
-        [HttpPost]
-        public async Task<JsonResult> ChangeItemActiveFlag(int itemId)
-        {
-             await _mySqlUserService.ToggleActiveItemChecklist(itemId);
-             return Json(new { success = true });
-        }
 
-        [HttpPost]
-        public async Task<JsonResult> SwapItemIndex(int currentitemId, int newIndex, int ChecklistId , int currentIndex) 
-        {
-            await _mySqlUserService.SwapNewIndex(currentitemId, newIndex ,ChecklistId, currentIndex);  
-            return Json(new { success = true });
-        }
 
-        [HttpGet]
-        public async Task<JsonResult> GetConstantsByItemId(int itemId)
-        {
-            var constants = await _mySqlUserService.getConstantItemById(itemId);
-            return Json(constants, JsonRequestBehavior.AllowGet);
-        }
 
-        [HttpPost]
-        public async Task<JsonResult> DeleteConstant(int constantId)
-        {
-           await _mySqlUserService.DeleteConstant(constantId);
-           return Json(new { success = true });
-        }
 
-        [HttpGet]
-        public async Task<JsonResult> GetMachineModelByChecklistId(int checklistId)
-        {
-            var machines = await _mySqlUserService.GetMachineModelByChecklistId(checklistId);
-            return Json(machines, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet]
-        public async Task<JsonResult> GetEntireModelMachine()
-        {
-            var result = await _machineModelAPI.GetModelMachines();
-
-           
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpPost]
-        public async Task<JsonResult> AddMachineToChecklist(int checklistId, int pmisModelId, string pmisModelDescription)
-        {
-            var newMachine = new EChecklistMachineInformation
-            {
-                ChecklistId = checklistId,
-                pmis_model_id = pmisModelId,
-                pmis_model_description = pmisModelDescription,
-                ActiveFlag = "Active"
-            };
-            await _mySqlUserService.AddMachineToChecklist(newMachine);
-            return Json(new { success = true });
-        }
-
-        [HttpPost]
-        public async Task<JsonResult> ToggleMachineStatus(int machineId)
-        {
-            await _mySqlUserService.ToggleMachineStatus(machineId);
-            return Json(new { success = true });
-        }
+        //[HttpPost]
+        //public async Task<JsonResult> ChangeItemActiveFlag(int itemId, bool isActive)
+        //{
+        //    var result = await _mySqlUserService.ChangeItemActiveFlag(itemId, isActive);
+        //    return Json(result);
+        //}
     }
-
 
     public class ChecklistManagementModel
     {
@@ -208,7 +138,4 @@ namespace E_ChecklistWebApp.Controllers
         public IEnumerable<EchecklistProcess> echecklistProcesses { get; set; }
         public IEnumerable<EChecklistChecklistDetail> Checklist { get; set; }
     }
-
-
 }
-

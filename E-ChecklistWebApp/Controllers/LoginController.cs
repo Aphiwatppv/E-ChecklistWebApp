@@ -33,10 +33,6 @@ namespace E_ChecklistWebApp.Controllers
 
             if (result.EN != null) // Successful login
             {
-
-                Session["Plant"] = result.Plant;
-              
-
                 Session["User"] = result;
                 return RedirectToAction("Index", "Home");
             }

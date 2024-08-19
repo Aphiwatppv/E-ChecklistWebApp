@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
         observer.observe(section);
     });
 
-
+    // Move the search bar event listener inside the DOMContentLoaded event
     const searchBar = document.getElementById('searchBar');
     if (searchBar) {
         searchBar.addEventListener('keyup', function () {
@@ -32,5 +32,4 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
-
 });

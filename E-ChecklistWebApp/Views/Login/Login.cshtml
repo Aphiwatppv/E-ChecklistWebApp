@@ -5,50 +5,31 @@
 
 <link href="~/css/styles-signin.css" rel="stylesheet">
 
-<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center background-image">
-    <div class="row justify-content-center w-100">
-        <div class="col-lg-5 col-md-6 d-none d-md-block col-sm-10 col-12 mb-4">
-            <div class="card shadow-lg transparent-card">
-                <div class="card-body p-5 text-center">
-                    <h1 class="display-4 mb-4">Welcome to E-Checklist System</h1>
-                    <p class="lead">Please log in to continue</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-5 col-md-6 col-sm-10 col-12">
-            <div class="card shadow-lg transparent-card">
-                <div class="card-body p-5">
-                    <h3 class="display-5 text-center mb-4">USER LOGIN</h3>
-                    @using (Html.BeginForm("Login", "Login", FormMethod.Post))
-                    {
-                        <div class="form-group mb-4 fade-in-section">
-                            <label for="EN" class="form-label text-decoration-underline">Employee Number</label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">
-                                        <img src="~/Images/icons8-user-60.png" alt="User Icon" class="icon-transparent"  style="width: 40px; height: 40px;">
-                                    </span>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 bg-light">
+            <div class="login d-flex align-items-center py-5">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10 col-xl-7 mx-auto fade-in-section">
+                            <h1 class="display-4 header-div text-center text-custom-logo">Logo</h1>
+                            <h3 class="display-4 header-div text-center text-custom">E-Checklist Login</h3>
+                            @using (Html.BeginForm("Login", "Login", FormMethod.Post))
+                            {
+                                <div class="form-group mb-3">
+                                    @Html.TextBoxFor(m => m.EN, new { @class = "form-control rounded-pill shadow-sm px-4", placeholder = "Employee Number", required = "required", autofocus = "autofocus" })
+                                    @Html.ValidationMessageFor(m => m.EN, "", new { @class = "text-danger" })
                                 </div>
-                                @Html.TextBoxFor(m => m.EN, new { @class = "form-control shadow-sm px-4", placeholder = "Employee Number", required = "required", autofocus = "autofocus" })
-                            </div>
-                            @Html.ValidationMessageFor(m => m.EN, "", new { @class = "text-danger" })
-                        </div>
-                        <div class="form-group mb-4 fade-in-section">
-                            <label for="Password" class="form-label text-decoration-underline" >Password</label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">
-                                        <img src="~/Images/icons8-key-48.png" alt="Lock Icon" class="icon-transparent"  style="width: 40px; height: 40px; " >
-                                    </span>
+                                <div class="form-group mb-3">
+                                    @Html.PasswordFor(m => m.Password, new { @class = "form-control rounded-pill shadow-sm px-4 text-primary", placeholder = "Password", required = "required" })
+                                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                                 </div>
-                                @Html.PasswordFor(m => m.Password, new { @class = "form-control shadow-sm px-4", placeholder = "Password", required = "required" })
-                            </div>
-                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                                <div class="form-group mb-3">
+                                    <button type="submit" class="btn btn-primary w-100 text-uppercase mb-2 rounded-pill shadow-sm">Login</button>
+                                </div>
+                            }
                         </div>
-                        <div class="form-group mt-4 fade-in-section">
-                            <button type="submit" class="btn btn-primary w-100 text-uppercase shadow-sm border-0" style="background-color: black; width: 40px; height: 40px; ">Login</button>
-                        </div>
-                    }
+                    </div>
                 </div>
             </div>
         </div>
@@ -56,30 +37,5 @@
 </div>
 
 @section Scripts {
-    <script src="~/bundles/jqueryval"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const faders = document.querySelectorAll('.fade-in-section');
-
-            const appearOptions = {
-                threshold: 0,
-                rootMargin: "0px 0px -100px 0px"
-            };
-
-            const appearOnScroll = new IntersectionObserver(function (entries, appearOnScroll) {
-                entries.forEach(entry => {
-                    if (!entry.isIntersecting) {
-                        return;
-                    } else {
-                        entry.target.classList.add('is-visible');
-                        appearOnScroll.unobserve(entry.target);
-                    }
-                });
-            }, appearOptions);
-
-            faders.forEach(fader => {
-                appearOnScroll.observe(fader);
-            });
-        });
-    </script>
+    @Scripts.Render("~/bundles/jqueryval")
 }

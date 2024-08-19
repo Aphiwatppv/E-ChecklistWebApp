@@ -1,24 +1,79 @@
 body {
-    background-color: black;
+    background-color: white;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    width: 100%;
 }
 
-.background-image {
-    background-color:black;
-    background-size: cover;
+.navbar {
+    background-color: rgba(47, 47, 47, 0.5) !important;
+    padding: 1rem;
 }
 
-.card {
-    border: none;
-    border-radius: 1rem;
+.nav-color {
+    color: #000 !important;
 }
 
-.transparent-card {
-    background-color: rgba(255, 255, 255, 0.85); /* Adjust transparency here */
+.header-tab p {
+    font-size: 3rem;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(134, 134, 134, 0.5);
+    margin: 0;
+    padding: 1rem;
 }
 
-.card-body {
-    padding: 2rem;
+.header-div {
+    margin-bottom: 4rem;
 }
+
+.login {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.form-control {
+    font-size: 0.9rem;
+    border-radius: 2rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    margin-bottom: 1rem;
+}
+
+.btn {
+    border-radius: 2rem;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.display-4 {
+    font-weight: 300;
+    font-size: 2.5rem;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.text-primary {
+    color: #000 !important;
+}
+
+.btn-primary {
+    background-color: #000;
+    border-color: #fff;
+    color: #fff;
+}
+
+    .btn-primary:hover {
+        background-color: #fff;
+        border-color: #fff;
+        color: #000;
+    }
 
 .fade-in-section {
     opacity: 0;
@@ -31,18 +86,10 @@ body {
         transform: none;
     }
 
-.text-danger {
-    color: #dc3545;
+.text-custom {
+    margin-bottom :5rem !important; 
 }
 
-.form-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: bold;
-    text-decoration: underline;
-}
-
-.icon-transparent {
-    opacity: 0.7; /* Adjust the transparency level here */
-  
+.text-custom-logo {
+    margin-bottom: 2rem !important;
 }

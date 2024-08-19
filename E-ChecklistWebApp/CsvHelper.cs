@@ -20,34 +20,16 @@ namespace E_ChecklistWebApp
             var csvBuilder = new StringBuilder();
 
             // Add the header row
-            csvBuilder.AppendLine(string.Join(",", properties.Select(p => EscapeCsvValue(p.Name))));
+            csvBuilder.AppendLine(string.Join(",", properties.Select(p => p.Name)));
 
             // Add the data rows
             foreach (var model in models)
             {
-                var values = properties.Select(p => EscapeCsvValue(p.GetValue(model, null)?.ToString() ?? string.Empty));
+                var values = properties.Select(p => p.GetValue(model, null)?.ToString() ?? string.Empty);
                 csvBuilder.AppendLine(string.Join(",", values));
             }
 
             return csvBuilder.ToString();
-        }
-
-        private static string EscapeCsvValue(string value)
-        {
-            if (string.IsNullOrEmpty(value))
-            {
-                return string.Empty;
-            }
-
-            // If the value contains commas, quotes, or line breaks, enclose it in quotes
-            if (value.Contains(",") || value.Contains("\"") || value.Contains("\n") || value.Contains("\r"))
-            {
-                // Escape any existing quotes by doubling them
-                value = value.Replace("\"", "\"\"");
-                return $"\"{value}\"";
-            }
-
-            return value;
         }
     }
 }

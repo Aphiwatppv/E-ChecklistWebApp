@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
 
 namespace E_ChecklistWebApp.Models
 {
@@ -13,8 +12,5 @@ namespace E_ChecklistWebApp.Models
         public string Plant { get; set; }
         public string Role { get; set; }
         public string CreateBy { get; set; }
-        public List<SelectListItem> AvailableRoles { get; set; }
-        public List<SelectListItem> AvailablePlants { get; set; }
-
     }
 }

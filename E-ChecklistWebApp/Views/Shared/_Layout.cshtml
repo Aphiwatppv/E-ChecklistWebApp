@@ -1,172 +1,80 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - E-Checklist System, Dev-Phase</title>
+    <title>@ViewBag.Title - E-Checklist System , Dev-Phase</title>
 
     <link href="~/bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="~/css/custom.css" rel="stylesheet"> <!-- Custom CSS -->
+
+    <script src="~/css/scripts.js"></script>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div class="container p">
-            <a class="navbar-brand" href="@Url.Action("Index", "Home", new { area = "" })">
-                <img src="~/images/icons8-home-button-100.png" alt="Home Icon" style="width: 50px; height: 50px; vertical-align: middle;">
-                E-Checklist System
-            </a>
+        <div class="container-fluid">
+            @Html.ActionLink("E-Checklist System", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    @if (Session["User"] != null)
+                    {
+                        var user = (E_ChecklistWebApp.Models.EchecklistAuthenticationWithoutHash)Session["User"];
+                        if (user.Role == "ADMIN")
+                        {
+                            <li class="nav-item">
+                                @Html.ActionLink("Process", "Process", "Process", new { area = "" }, new { @class = "nav-link text-white" })
+                            </li>
+                            <li class="nav-item">
+                                @Html.ActionLink("Engineering Feature", "Engineering", "Engineering", new { area = "" }, new { @class = "nav-link text-white" })
+                            </li>
+                        }
+                        else if (user.Role == "ENGINEER")
+                        {
+                            <li class="nav-item">
+                                @Html.ActionLink("Process", "Process", "Process", new { area = "" }, new { @class = "nav-link text-white" })
+                            </li>
+                            <li class="nav-item">
+                                @Html.ActionLink("Engineering Feature", "Engineering", "Engineering", new { area = "" }, new { @class = "nav-link text-white" })
+                            </li>
+                        }
+                        else if (user.Role == "User")
+                        {
+                            <li class="nav-item">
+                                @Html.ActionLink("Process", "Process", "Process", new { area = "" }, new { @class = "nav-link text-white" })
+                            </li>
+                        }
+                    }
+                </ul>
                 <ul class="navbar-nav ms-auto">
                     @if (Session["User"] != null)
                     {
                         var user = (E_ChecklistWebApp.Models.EchecklistAuthenticationWithoutHash)Session["User"];
                         <li class="nav-item">
-                            <a class="nav-link" href="#" id="toggleNavItems" aria-label="Toggle Navigation Items">
-                                <img src="~/images/icons8-menu-bar-48.png" alt="Menu Icon" style="width: 30px; height: 30px;">
-                            </a>
-                            <ul class="dropdown-menu transparent-dropdown-menu" id="navItems" style="display: none;">
-                                @if (user.Role == "ADMIN" || user.Role == "ENGINEER" || user.Role == "User")
-                                {
-                                    <li class="dropdown-item">
-                                        <a class="nav-link" href="@Url.Action("Process", "Process", new { area = "" })">
-                                            <img src="~/images/icons8-process-80.png" alt="Process Icon" style="width: 40px; height: 40px; vertical-align: middle;">
-                                            Process
-                                        </a>
-                                    </li>
-                                }
-                                @if (user.Role == "ADMIN" || user.Role == "ENGINEER")
-                                {
-                                    <li class="dropdown-item">
-                                        <a class="nav-link" href="@Url.Action("Engineering", "Engineering", new { area = "" })">
-                                            <img src="~/images/icons8-services-80.png" alt="Engineering Icon" style="width: 40px; height: 40px; vertical-align: middle;">
-                                            Engineering Feature
-                                        </a>
-                                    </li>
-                                }
-                            </ul>
+                            @Html.ActionLink($"Welcome, {user.EN} | Role : {user.Role}", "Details", "UserInformation", new { area = "" }, new { @class = "nav-link text-white" })
                         </li>
 
-                        if (user.Role == "ADMIN")
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link" href="#" id="userIcon" aria-label="User Details">
-                                    <img src="~/images/icons8-admin-100.png" alt="User Icon" style="width: 40px; height: 40px;">
-                                </a>
-                                <ul class="dropdown-menu transparent-dropdown-menu" id="userDetails" style="display: none;">
-                                    <li class="dropdown-item">Welcome, @user.EN</li>
-                                    <li class="dropdown-item">Role: @user.Role</li>
-                                </ul>
-                            </li>
-                            <li class="nav-item custom-nav-item">
-                                @Html.ActionLink("Logout", "Logout", "Login", new { area = "" }, new { @class = "nav-link" })
-                            </li>
-                        }
-                        else if (user.Role == "ENGINEER")
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link" href="#" id="userIcon" aria-label="User Details">
-                                    <img src="~/images/icons8-engineer-100.png" alt="User Icon" style="width: 40px; height: 40px;">
-                                </a>
-                                <ul class="dropdown-menu transparent-dropdown-menu" id="userDetails" style="display: none;">
-                                    <li class="dropdown-item">Welcome, @user.EN</li>
-                                    <li class="dropdown-item">Role: @user.Role</li>
-                                </ul>
-                            </li>
-                            <li class="nav-item custom-nav-item">
-                                @Html.ActionLink("Logout", "Logout", "Login", new { area = "" }, new { @class = "nav-link" })
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link" href="#" id="userIcon" aria-label="User Details">
-                                    <img src="~/images/icons8-user-50.png" alt="User Icon" style="width: 40px; height: 40px;">
-                                </a>
-                                <ul class="dropdown-menu transparent-dropdown-menu" id="userDetails" style="display: none;">
-                                    <li class="dropdown-item">Welcome, @user.EN</li>
-                                    <li class="dropdown-item">Role: @user.Role</li>
-                                </ul>
-                            </li>
-                            <li class="nav-item custom-nav-item">
-                                @Html.ActionLink("Logout", "Logout", "Login", new { area = "" }, new { @class = "nav-link" })
-                            </li>
-                        }
+                        <li class="nav-item">
+                            @Html.ActionLink("Logout", "Logout", "Login", new { area = "" }, new { @class = "nav-link text-white" })
+                        </li>
+
                     }
                     else
                     {
-                        <li class="nav-item custom-nav-item bg-white border border-dark rounded-2 ">
-                            <a class="nav-link text-dark" href="@Url.Action("Login", "Login", new { area = "" })">
-                                <img src="~/images/icons8-login-64.png" alt="Login Icon" style="width: 20px; height: 20px;">
-                                Log In
-                            </a>
+                        <li class="nav-item">
+                            @Html.ActionLink("Sign In", "Login", "Login", new { area = "" }, new { @class = "nav-link text-white" })
                         </li>
+
                     }
                 </ul>
             </div>
         </div>
     </nav>
-    <div class="container-fluid mt-5 pt-4 h-100">
-        @RenderBody()
-    </div>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3">
-        <div class="container">
-            <p class="mb-0">UTAC E-Checklist System &copy; @DateTime.Now.Year. All Rights Reserved.</p>
-            @*<ul class="list-inline mt-2">
-                <li class="list-inline-item">
-                    <a class="text-white" href="@Url.Action("Privacy", "Home", new { area = "" })">Privacy Policy</a>
-                </li>
-                <li class="list-inline-item">
-                    <a class="text-white" href="@Url.Action("Terms", "Home", new { area = "" })">Terms of Service</a>
-                </li>
-                <li class="list-inline-item">
-                    <a class="text-white" href="@Url.Action("Contact", "Home", new { area = "" })">Contact Us</a>
-                </li>
-            </ul>*@
-        </div>
-    </footer>
-
-    <!-- Scripts -->
+    @RenderBody()
+    <script src="~/bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
     <script src="~/bootstrap-5.3.3-dist/js/jquery-3.7.1.min.js"></script>
-    <script src="~/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/fadeIn.js"></script>
     @RenderSection("scripts", required: false)
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var toggleNavItems = document.getElementById('toggleNavItems');
-            if (toggleNavItems) {
-                toggleNavItems.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    var navItems = document.getElementById('navItems');
-                    navItems.style.display = navItems.style.display === 'block' ? 'none' : 'block';
-                });
-            }
-
-            var userIcon = document.getElementById('userIcon');
-            if (userIcon) {
-                userIcon.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    var userDetails = document.getElementById('userDetails');
-                    userDetails.style.display = userDetails.style.display === 'block' ? 'none' : 'block';
-                });
-            }
-
-            document.addEventListener('click', function (e) {
-                var navItems = document.getElementById('navItems');
-                var userDetails = document.getElementById('userDetails');
-                if (navItems && navItems.style.display === 'block' && !toggleNavItems.contains(e.target) && !navItems.contains(e.target)) {
-                    navItems.style.display = 'none';
-                }
-                if (userDetails && userDetails.style.display === 'block' && !userIcon.contains(e.target) && !userDetails.contains(e.target)) {
-                    userDetails.style.display = 'none';
-                }
-            });
-        });
-    </script>
 </body>
 </html>
