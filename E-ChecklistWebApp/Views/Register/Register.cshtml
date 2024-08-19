@@ -6,7 +6,7 @@
 <link href="~/css/styles-register.css" rel="stylesheet">
 <div class="container-fluid">
     <div class="row no-gutter">
-        <div class="col-md-6 d-none d-md-flex bg-image fade-in-section"></div>
+        <div class="col-md-6 d-none d-md-flex bg-image fade-in-section" style="background-image: url('/Images/portrait-young-woman-scientist-working.jpg'); background-size: cover; background-position: center;"></div>
         <div class="col-md-6 bg-dark">
             <div class="Register d-flex align-items-center py-5">
                 <div class="container">
@@ -22,18 +22,18 @@
                                 </div>
                             }
 
-                            @using (Html.BeginForm("Register", "Register", FormMethod.Post))
+                            @using (Html.BeginForm("Register", "Register", FormMethod.Post, new { id = "registerForm" }))
                             {
                                 <div class="form-group mb-3">
                                     @Html.TextBoxFor(m => m.EN, new { @class = "form-control rounded-pill border-0 shadow-sm px-4", placeholder = "Employee Number", required = "required", autofocus = "autofocus" })
                                     @Html.ValidationMessageFor(m => m.EN, "", new { @class = "text-danger" })
                                 </div>
                                 <div class="form-group mb-3">
-                                    @Html.TextBoxFor(m => m.Role, new { @class = "form-control rounded-pill border-0 shadow-sm px-4", placeholder = "Role", required = "required" })
+                                    @Html.DropDownListFor(m => m.Role, Model.AvailableRoles, new { @class = "form-control rounded-pill border-0 shadow-sm px-4", required = "required" })
                                     @Html.ValidationMessageFor(m => m.Role, "", new { @class = "text-danger" })
                                 </div>
                                 <div class="form-group mb-3">
-                                    @Html.TextBoxFor(m => m.Plant, new { @class = "form-control rounded-pill border-0 shadow-sm px-4", placeholder = "Plant", required = "required" })
+                                    @Html.DropDownListFor(m => m.Plant, Model.AvailablePlants, new { @class = "form-control rounded-pill border-0 shadow-sm px-4", required = "required" })
                                     @Html.ValidationMessageFor(m => m.Plant, "", new { @class = "text-danger" })
                                 </div>
                                 <div class="form-group mb-3">
@@ -45,10 +45,34 @@
                                     @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                                 </div>
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm w-100">Register</button>
+                                    <button type="button" class="btn btn-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm w-100" data-bs-toggle="modal" data-bs-target="#confirmModal">Register</button>
                                 </div>
                                 <div class="text-center d-flex justify-content-between mt-4">
                                     <p class="mb-0 text-white">Already have an account? @Html.ActionLink("Sign In", "Login", "Login", new { area = "" }, new { @class = "text-white" })</p>
+                                </div>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title text-danger" id="confirmModalLabel">Confirm Registration</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body text-dark">
+                                                <p>Are you sure you want to register with the following details?</p>
+                                                <ul>
+                                                    <li><strong>Employee Number:</strong> <span id="confirmEN"></span></li>
+                                                    <li><strong>Role:</strong> <span id="confirmRole"></span></li>
+                                                    <li><strong>Plant:</strong> <span id="confirmPlant"></span></li>
+                                                </ul>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="button" class="btn btn-primary" id="confirmSubmit">Confirm</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             }
                         </div>
@@ -61,4 +85,21 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            $('#confirmModal').on('show.bs.modal', function (event) {
+                var en = $('#EN').val();
+                var role = $('#Role').val();
+                var plant = $('#Plant').val();
+
+                $('#confirmEN').text(en);
+                $('#confirmRole').text(role);
+                $('#confirmPlant').text(plant);
+            });
+
+            $('#confirmSubmit').click(function () {
+                $('#registerForm').submit();
+            });
+        });
+    </script>
 }

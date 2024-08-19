@@ -143,6 +143,7 @@
     <Compile Include="Controllers\checklistEntryController.cs" />
     <Compile Include="Controllers\ChecklistManagementController.cs" />
     <Compile Include="Controllers\EngineeringController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ProcessController.cs" />
@@ -151,10 +152,15 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="MachineModeApi\IMachineModelAPI.cs" />
+    <Compile Include="MachineModeApi\MachineModelAPI.cs" />
     <Compile Include="Models\EchecklistAllowingProcess.cs" />
     <Compile Include="Models\EchecklistAuthenticationWithoutHash.cs" />
     <Compile Include="Models\EchecklistInputAuthentication.cs" />
     <Compile Include="Models\EChecklistInputLogIn.cs" />
+    <Compile Include="Models\EChecklistMachineModel.cs" />
+    <Compile Include="Models\InpuToSearchLishOfMachine.cs" />
+    <Compile Include="Models\pmisMachineName.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -199,9 +205,11 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="css\custom.css" />
     <Content Include="css\scripts.js" />
     <Content Include="css\style-feature.css" />
     <Content Include="css\styles-checklist-entry.css" />
+    <Content Include="css\styles-checklist-Management.css" />
     <Content Include="css\styles-checklist.css" />
     <Content Include="css\styles-process.css" />
     <Content Include="css\styles-register.css" />
@@ -212,7 +220,24 @@
     <Content Include="Content\Site.css" />
     <Content Include="Images\backg.jpg" />
     <Content Include="Images\backgroundSingIn.jpg" />
+    <Content Include="Images\feature-one.jpg" />
+    <Content Include="Images\feature-three.jpg" />
+    <Content Include="Images\feature-two.jpg" />
     <Content Include="Images\four-three.jpg" />
+    <Content Include="Images\icons8-admin-100.png" />
+    <Content Include="Images\icons8-down-40.png" />
+    <Content Include="Images\icons8-engineer-100.png" />
+    <Content Include="Images\icons8-home-button-100.png" />
+    <Content Include="Images\icons8-key-48.png" />
+    <Content Include="Images\icons8-login-64.png" />
+    <Content Include="Images\icons8-logout-48.png" />
+    <Content Include="Images\icons8-menu-bar-32.png" />
+    <Content Include="Images\icons8-menu-bar-48.png" />
+    <Content Include="Images\icons8-process-80.png" />
+    <Content Include="Images\icons8-services-80.png" />
+    <Content Include="Images\icons8-up-40.png" />
+    <Content Include="Images\icons8-user-50.png" />
+    <Content Include="Images\icons8-user-60.png" />
     <Content Include="Images\image-one.jpg" />
     <Content Include="Images\Image-Signin.jpg" />
     <Content Include="Images\image-three.jpg" />
@@ -231,6 +256,7 @@
     <Content Include="js\bootstrap.esm.min.js.map" />
     <Content Include="js\bootstrap.js.map" />
     <Content Include="js\bootstrap.min.js.map" />
+    <Content Include="js\fadeIn.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -402,6 +428,9 @@
     <Content Include="Views\Engineering\Engineering.cshtml" />
     <Content Include="Views\AllowUserToProcess\AllowUserToProcess.cshtml" />
     <Content Include="Views\ChecklistManagement\ChecklistManagement.cshtml" />
+    <Content Include="Views\Error\General.cshtml" />
+    <Content Include="Views\Error\NotFound.cshtml" />
+    <Content Include="Views\Error\ServerError.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -35,7 +35,6 @@ body {
 }
 
 .bg-image {
-    background-image: url('/Images/portrait-young-woman-scientist-working.jpg');
     background-size: cover;
     background-position: center;
 }

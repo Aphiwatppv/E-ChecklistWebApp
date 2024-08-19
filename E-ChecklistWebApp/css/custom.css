@@ -1,0 +1,14 @@
+﻿/* custom.css */
+.transparent-dropdown-menu {
+    background-color: #343a40 !important; /* Matches the bg-dark class in Bootstrap */
+    border: none !important;
+    box-shadow: none !important;
+}
+
+ .transparent-dropdown-menu .dropdown-item {
+        color: white !important;
+}
+
+ .transparent-dropdown-menu .dropdown-item:hover {
+            background-color: #495057 !important; /* Slightly lighter dark color for hover effect */
+}

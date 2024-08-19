@@ -1,7 +1,10 @@
-﻿using MySqlUserEngineServices.Model;
+﻿using E_ChecklistWebApp.MachineModeApi;
+using E_ChecklistWebApp.Models;
+using MySqlUserEngineServices.Model;
 using MySqlUserEngineServices.MySqlUserService;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -14,15 +17,18 @@ namespace E_ChecklistWebApp.Controllers
     {
         private readonly IMySqlUserService _mySqlUserService;
 
+        private readonly IMachineModelAPI _machineModelAPI; 
+
         private int checklistId;
         private string checklistName;
         private string checklistDescription;
         private string checklistdate;
         private int processId;
 
-        public checklistEntryController(IMySqlUserService mySqlUserService)
+        public checklistEntryController(IMySqlUserService mySqlUserService, IMachineModelAPI machineModelAPI)
         {
             _mySqlUserService = mySqlUserService;
+            _machineModelAPI = machineModelAPI; 
         }
 
         public async Task<ActionResult> checklistEntry(int ChecklistId, string ChecklistName, string ChecklistDescription, string Checklistdate, int ProcessId)
@@ -42,6 +48,7 @@ namespace E_ChecklistWebApp.Controllers
             ViewBag.ProcessId = ProcessId;
             var checklistItems = await _mySqlUserService.getChecklistItemById(ChecklistId);
             var checklistItemsWithConstants = new List<ChecklistItemWithConstants>();
+            var MachineName = await getMachineName(ChecklistId);
 
             foreach (var item in checklistItems)
             {
@@ -60,7 +67,8 @@ namespace E_ChecklistWebApp.Controllers
                 ChecklistDescription = ChecklistDescription,
                 CreateDate = Checklistdate,
                 ChecklistItemsWithConstants = checklistItemsWithConstants,
-                echecklistHistoricalRecords = result
+                echecklistHistoricalRecords = result,
+                pmisMachineNames = MachineName
 
             };
 
@@ -100,7 +108,7 @@ namespace E_ChecklistWebApp.Controllers
                     MachineName = MachineName
                 };
 
-                var historicalRecord = await _mySqlUserService.getHistoricalRecordFilter(filterParameters, checklistId) ?? new List<EchecklistHistoricalRecord>();
+                var historicalRecord = await _mySqlUserService.getHistoricalRecordFilter(filterParameters, ChecklistId) ?? new List<EchecklistHistoricalRecord>();
 
                 var model = new ChecklistEntryViewModel
                 {
@@ -115,7 +123,7 @@ namespace E_ChecklistWebApp.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception (use your preferred logging framework)
+               
                 System.Diagnostics.Debug.WriteLine("Error in GetchecklistRecordHistoricalbyfilter: " + ex.Message);
                 return new HttpStatusCodeResult(500, "Internal server error: " + ex.Message);
             }
@@ -197,7 +205,7 @@ namespace E_ChecklistWebApp.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<ActionResult> DownloadRecords(int historicalId)
         {
             var records = await _mySqlUserService.gethistoricalById(historicalId);
@@ -208,10 +216,27 @@ namespace E_ChecklistWebApp.Controllers
             }
 
             var csvContent = CsvHelper.ConvertToCsv(records);
-            var bytes = Encoding.UTF8.GetBytes(csvContent);
-            var fileName = "historical_records.csv";
+            var bytes = new UTF8Encoding(true).GetBytes(csvContent);
+            var fileName = $"{historicalId}_historical_records.csv";
 
-            return File(bytes, "text/csv", fileName);
+            return File(bytes, "application/csv");
+        }
+
+        public async Task<IEnumerable<pmisMachineName>> getMachineName(int ChecklistId)
+        {
+            var listresult = await _mySqlUserService.GetActiveMachineModelByChecklistId(ChecklistId);
+
+            List<int> ints = new List<int>();   
+
+            foreach (var item in listresult)
+            {
+                ints.Add(item.pmis_model_id );
+            }
+            var result =  await _machineModelAPI.GetMachinesNameByListId(ints);
+
+            return result;
+
+
         }
     }
 
@@ -222,6 +247,7 @@ namespace E_ChecklistWebApp.Controllers
         public string CreateDate { get; set; }
         public IEnumerable<ChecklistItemWithConstants> ChecklistItemsWithConstants { get; set; }
         public IEnumerable<EchecklistHistoricalRecord> echecklistHistoricalRecords { get; set; }
+        public IEnumerable<pmisMachineName> pmisMachineNames { get; set; }
     }
 
     public class ChecklistItemWithConstants

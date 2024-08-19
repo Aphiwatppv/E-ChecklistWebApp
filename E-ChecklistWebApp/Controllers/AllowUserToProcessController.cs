@@ -1,4 +1,5 @@
-﻿using MySqlUserEngineServices.Model;
+﻿using E_ChecklistWebApp.AuthApi;
+using MySqlUserEngineServices.Model;
 using MySqlUserEngineServices.MySqlUserService;
 using System;
 using System.Collections.Generic;
@@ -14,15 +15,16 @@ namespace E_ChecklistWebApp.Controllers
     public class AllowUserToProcessController : Controller
     {
         private readonly IMySqlUserService _mySqlUserService;
-
-        public AllowUserToProcessController(IMySqlUserService mySqlUserService)
+        private readonly IAuthAPI _authAPI;
+        public AllowUserToProcessController(IMySqlUserService mySqlUserService , IAuthAPI authAPI)
         {
             _mySqlUserService = mySqlUserService;
+            _authAPI = authAPI;
         }
 
         public async Task<ActionResult> AllowUserToProcess()
         {
-            var eChecklistAuthenDetails = await _mySqlUserService.getEN();
+            var eChecklistAuthenDetails = await _authAPI.GetEntireEN();
             var echecklistProcesses = await _mySqlUserService.GetActiveProcessDetails();
             var allowUserToProcessModels = new AllowUserToProcessModels
             {
@@ -47,7 +49,7 @@ namespace E_ChecklistWebApp.Controllers
         public async Task<ActionResult> getAllowingProcess(string EN)
         {
             var result = await _mySqlUserService.getAllowingProcess(EN);
-            var eChecklistAuthenDetails = await _mySqlUserService.getEN();
+            var eChecklistAuthenDetails = await _authAPI.GetEntireEN();
             var echecklistProcesses = await _mySqlUserService.GetActiveProcessDetails();
             var allowUserToProcessModels = new AllowUserToProcessModels
             {

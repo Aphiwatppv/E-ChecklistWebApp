@@ -1,4 +1,5 @@
 ﻿using E_ChecklistWebApp.Models;
+using MySqlUserEngineServices.Model;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -52,5 +53,31 @@ namespace E_ChecklistWebApp.AuthApi
 
             return response.IsSuccessStatusCode ? "success" : "failure";
         }
+
+        public async Task<IEnumerable<EChecklistAuthenDetails>> GetEntireEN()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/Authen/GetAllUser");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    var machines = JsonConvert.DeserializeObject<IEnumerable<EChecklistAuthenDetails>>(result);
+
+                    return machines ?? Enumerable.Empty<EChecklistAuthenDetails>();
+                }
+                else
+                {
+                    return Enumerable.Empty<EChecklistAuthenDetails>();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception as needed
+                return Enumerable.Empty<EChecklistAuthenDetails>();
+            }
+        }
+
     }
 }

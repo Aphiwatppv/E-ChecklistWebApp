@@ -21,7 +21,21 @@ namespace E_ChecklistWebApp.Controllers
         [HttpGet]
         public ActionResult Register()
         {
-            return View();
+            var model = new EchecklistInputAuthentication
+            {
+                AvailableRoles = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "User", Text = "User" },
+                    new SelectListItem { Value = "ENGINEER", Text = "ENGINEER" }
+                },
+                AvailablePlants = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "UTL1", Text = "UTL1" },
+                    new SelectListItem { Value = "UTL2", Text = "UTL2" },
+                    new SelectListItem { Value = "UTL3", Text = "UTL3" }
+                }
+            };
+            return View(model);
         }
 
         [HttpPost]
@@ -31,6 +45,17 @@ namespace E_ChecklistWebApp.Controllers
             model.CreateBy = user.EN; // Regist by ?
             if (!ModelState.IsValid)
             {
+                model.AvailableRoles = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "User", Text = "User" },
+                    new SelectListItem { Value = "ENGINEER", Text = "ENGINEER" }
+                };
+                model.AvailablePlants = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "UTL1", Text = "UTL1" },
+                    new SelectListItem { Value = "UTL2", Text = "UTL2" },
+                    new SelectListItem { Value = "UTL3", Text = "UTL3" }
+                };
                 return View(model);
             }
 
@@ -49,6 +74,17 @@ namespace E_ChecklistWebApp.Controllers
             }
 
             ModelState.AddModelError(string.Empty, "Registration failed. Please try again.");
+            model.AvailableRoles = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "User", Text = "User" },
+                new SelectListItem { Value = "ENGINEER", Text = "ENGINEER" }
+            };
+            model.AvailablePlants = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "UTL1", Text = "UTL1" },
+                new SelectListItem { Value = "UTL2", Text = "UTL2" },
+                new SelectListItem { Value = "UTL3", Text = "UTL3" }
+            };
             return View(model);
         }
     }
